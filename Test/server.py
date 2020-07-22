@@ -6,13 +6,20 @@ import RN42
 import address as ad
 addr = ad.client_address
 
+res_data = []
 
-class Main:
-    ras = RN42.RN42("ras", ad.client_address, 1)
-    ras.connectBluetooth(ras.bdAddr,ras.port)
+ras = RN42.RN42("ras", ad.client_address, 1)
+ras.connectBluetooth(ras.bdAddr, ras.port)
 
-    for i in range(10000):
-        try:
-            ras.sock.send((i//256).to_bytes(1, "little"))
-        except KeyboardInterrupt:
-            ras.disConnect(ras.sock)
+for i in range(256*40):
+    try:
+        data = i % 256
+        ras.sock.send((data).to_bytes(1, "little"))
+        res_data.append([time.time(), data])
+    except KeyboardInterrupt:
+        ras.disConnect(ras.sock)
+file = open("./sdata.csv", "w")
+
+w = csv.writer(file)
+w.writerows(res_data)
+file.close()
