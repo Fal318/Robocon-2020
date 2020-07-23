@@ -15,7 +15,7 @@ try:
     server_socket.listen(1)
     client_socket, address = server_socket.accept()
     while True:
-        data = client_socket.recv(1024)
+        data = int.from_bytes(client_socket.recv(1024), "little")
         recv_data.append([time.time(), data])
 except:
     tr.print_exc()
