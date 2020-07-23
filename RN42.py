@@ -80,5 +80,6 @@ class RN42:
             except KeyboardInterrupt:
                 break
 
-    def disConnect(self, sock):
-        sock.close()
+    def disConnect(self, sock=None):
+        self.__sock.close()
+        # sock.close()

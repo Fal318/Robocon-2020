@@ -5,8 +5,6 @@ import struct
 import bluetooth as bt
 import address as ad
 
-
-
 addr = ad.server_address
 PORT = 1
 
@@ -23,7 +21,7 @@ try:
 except:
     tr.print_exc()
 
-file = open("./cdata.csv", "w")
+file = open("./log/cdata{0}.csv".format(PORT-1), "w")
 
 w = csv.writer(file)
 w.writerows(recv_data)
