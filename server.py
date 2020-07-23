@@ -10,8 +10,8 @@ import bluetooth as bt
 import RN42
 import address
 
-PERIOD = 0.1
-LOOP = 10000
+PERIOD = 0.05
+LOOP = 500
 
 
 class Connection:
@@ -33,11 +33,23 @@ class Connection:
             self.aivable = True
             print("Connect")
 
+    def sighandler(self, signr, handler):
+        pass
+
     def is_aivable(self):
         return self.aivable
-
+    """
     def send(self, signam, frame):
         self.data = random.randint(0, 255)
+        self.lastsend = time.time()
+        self.ras.sock.send((self.data).to_bytes(1, "little"))
+        self.res_data.append([time.time(), self.data])
+        print("target={0} send:{1}".format(self.id, self.data))
+    """
+
+    def send(self):
+        self.data = random.randint(0, 255)
+        self.sendtime = time.time()
         self.ras.sock.send((self.data).to_bytes(1, "little"))
         self.res_data.append([time.time(), self.data])
         print("target={0} send:{1}".format(self.id, self.data))
@@ -50,18 +62,19 @@ class Connection:
         self.file.close()
 
     def main_process(self):
-        try:
-            signal.signal(signal.SIGALRM, self.send)
-            signal.setitimer(signal.ITIMER_REAL, PERIOD, PERIOD)
-            for _ in range(LOOP):
-                time.sleep(1)
-        except KeyboardInterrupt:
-            print("Connection Killed")
-            return
-        except:
-            traceback.print_exc()
-            print("Connection Killed")
-            return
+        for _ in range(LOOP):
+            try:
+                self.send()
+                self.itv = PERIOD - (time.time() - self.sendtime)
+                time.sleep(self.itv)
+            except KeyboardInterrupt:
+                print("Connection Killed")
+                break
+            except:
+                traceback.print_exc()
+                print(self.itv)
+                print("Connection Killed")
+                break
 
     def __del__(self):
         self.write_logs()
@@ -70,7 +83,7 @@ class Connection:
 
 def main():
     rass, threads = [], []
-    for i in range(2):
+    for i in range(1):
         try:
             ras = Connection(i)
             if not(ras.is_aivable()):
@@ -82,7 +95,6 @@ def main():
             continue
     for t in threads:
         t.start()
-    for t in threads:
         t.join()
     for ras in rass:
         del ras

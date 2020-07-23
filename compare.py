@@ -5,8 +5,8 @@ import statistics
 import matplotlib.pyplot as plt
 
 period = input("周期を入力してください")
-cfile = open("./cdata.csv", "r")
-sfile = open("./sdata.csv", "r")
+cfile = open("./log/sdata_0.csv", "r")#open("./cdata.csv", "r")
+sfile = open("./log/sdata_0.csv", "r")#open("./sdata.csv", "r")
 
 ccsv = csv.reader(cfile)
 scsv = csv.reader(sfile)
