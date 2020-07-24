@@ -25,7 +25,7 @@ class Connection:
             self.aivable = False
             return
         try:
-            self.ras = RN42.RN42("ras{0}".format(self.id), self.addr, 1)
+            self.ras = RN42.RN42("ras{0}".format(self.id), self.addr, self.id+1)
             self.ras.connectBluetooth(self.ras.bdAddr, self.ras.port)
         except:
             self.aivable = False
@@ -89,6 +89,7 @@ def main():
             continue
     for t in threads:
         t.start()
+    for t in threads:
         t.join()
     for ras in rass:
         del ras

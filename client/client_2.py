@@ -6,7 +6,7 @@ import bluetooth as bt
 import address as ad
 
 addr = ad.server_address
-PORT = 3
+PORT = 2
 
 server_socket = bt.BluetoothSocket(bt.RFCOMM)
 recv_data = []
