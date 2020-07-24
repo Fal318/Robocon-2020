@@ -23,19 +23,15 @@ class Connection:
         except IndexError:
             self.aivable = False
             return
-        try:
-            self.ras = RN42.RN42("ras{0}".format(
-                self.id), self.addr, self.id+1)
-            self.ras.connectBluetooth(self.ras.bdAddr, self.ras.port)
-        except:
-            self.aivable = False
-            print("Connection Failed")
-        else:
+
+        self.ras = RN42.RN42("ras{0}".format(
+            self.id), self.addr, self.id+1)
+        if self.ras.connectBluetooth(self.ras.bdAddr, self.ras.port):
             self.aivable = True
             print("Connect")
-
-    def sighandler(self, signr, handler):
-        pass
+        else:
+            self.aivable = False
+            print("Connection Failed")
 
     def is_aivable(self):
         return self.aivable
@@ -46,6 +42,11 @@ class Connection:
         self.ras.sock.send((self.data).to_bytes(1, "little"))
         self.res_data.append([time.time(), self.data])
         print("target={0} send:{1}".format(self.id, self.data))
+    def send_arr(self):
+        pass
+    def receive(self):
+        self.rcv_data = int.from_bytes(self.ras.sock.recv(1024), "little")
+        print("host:{0} recv:{1}".format(self.id, self.rcv_data))
 
     def write_logs(self):
         self.path = "../log/sdata{0}.csv".format(self.id)
@@ -63,8 +64,7 @@ class Connection:
             except KeyboardInterrupt:
                 print("Connection Killed")
                 break
-            except:
-                traceback.print_exc()
+            except bt.BluetoothError:
                 print("Connection Killed")
                 break
 
@@ -76,22 +76,15 @@ class Connection:
 def main():
     rass, threads = [], []
     for i in range(2):
-        try:
-            ras = Connection(i)
-            if not(ras.is_aivable()):
-                continue
-            rass.append(ras)
-            thread = threading.Thread(target=ras.main_process)
-            threads.append(thread)
-        except:
-            traceback.print_exc()
+        ras = Connection(i)
+        if not(ras.is_aivable()):
             continue
+        rass.append(ras)
+        thread = threading.Thread(target=ras.main_process)
+        threads.append(thread)
     for t in threads:
         t.start()
-    """
-    for t in threads:
-        t.join()
-    """
+
     for ras in rass:
         del ras
 

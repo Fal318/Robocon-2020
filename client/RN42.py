@@ -69,17 +69,18 @@ class RN42:
         self.__sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)  # config
 
     def connectBluetooth(self, bdAddr, port):
-        #for _ in range(4):
         while True:
             try:
                 self.__sock.connect((bdAddr, port))
                 sleep(2)
-                break
             except bluetooth.BluetoothError:
                 self.reConnect(bdAddr, port)
                 sleep(0.5)
             except KeyboardInterrupt:
                 break
+            else:
+                return True
+        return False
 
     def disConnect(self, sock=None):
         self.__sock.close()
