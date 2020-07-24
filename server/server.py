@@ -39,14 +39,6 @@ class Connection:
 
     def is_aivable(self):
         return self.aivable
-    """
-    def send(self, signam, frame):
-        self.data = random.randint(0, 255)
-        self.lastsend = time.time()
-        self.ras.sock.send((self.data).to_bytes(1, "little"))
-        self.res_data.append([time.time(), self.data])
-        print("target={0} send:{1}".format(self.id, self.data))
-    """
 
     def send(self):
         self.data = random.randint(0, 255)
@@ -56,7 +48,7 @@ class Connection:
         print("target={0} send:{1}".format(self.id, self.data))
 
     def write_logs(self):
-        self.path = "./log/sdata_{0}.csv".format(self.id)
+        self.path = "../log/sdata_{0}.csv".format(self.id)
         self.file = open(self.path, "w")
         self.w = csv.writer(self.file)
         self.w.writerows(self.res_data)
@@ -84,7 +76,7 @@ class Connection:
 
 def main():
     rass, threads = [], []
-    for i in range(1):
+    for i in range(2):
         try:
             ras = Connection(i)
             if not(ras.is_aivable()):
@@ -93,6 +85,7 @@ def main():
             thread = threading.Thread(target=ras.main_process)
             threads.append(thread)
         except:
+            traceback.print_exc()
             continue
     for t in threads:
         t.start()

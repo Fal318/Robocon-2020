@@ -14,6 +14,7 @@ try:
     server_socket.bind(("", PORT))
     server_socket.listen(1)
     client_socket, address = server_socket.accept()
+    print("Connect")
     while True:
         data = int.from_bytes(client_socket.recv(1024), "little")
         recv_data.append([time.time(), data])
@@ -21,7 +22,7 @@ try:
 except:
     tr.print_exc()
 
-file = open("./log/cdata{0}.csv".format(PORT-1), "w")
+file = open("../log/cdata{0}.csv".format(PORT-1), "w")
 
 w = csv.writer(file)
 w.writerows(recv_data)
