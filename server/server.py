@@ -3,7 +3,6 @@ import csv
 import sys
 import time
 import random
-import signal
 import struct
 import traceback
 import threading
@@ -11,7 +10,7 @@ import bluetooth as bt
 import RN42
 import address
 
-PERIOD = 0.05
+PERIOD = 0.2
 LOOP = 500
 
 
@@ -25,7 +24,8 @@ class Connection:
             self.aivable = False
             return
         try:
-            self.ras = RN42.RN42("ras{0}".format(self.id), self.addr, self.id+1)
+            self.ras = RN42.RN42("ras{0}".format(
+                self.id), self.addr, self.id+1)
             self.ras.connectBluetooth(self.ras.bdAddr, self.ras.port)
         except:
             self.aivable = False
@@ -48,7 +48,7 @@ class Connection:
         print("target={0} send:{1}".format(self.id, self.data))
 
     def write_logs(self):
-        self.path = "../log/sdata_{0}.csv".format(self.id)
+        self.path = "../log/sdata{0}.csv".format(self.id)
         self.file = open(self.path, "w")
         self.w = csv.writer(self.file)
         self.w.writerows(self.res_data)
@@ -65,7 +65,6 @@ class Connection:
                 break
             except:
                 traceback.print_exc()
-                print(self.itv)
                 print("Connection Killed")
                 break
 
@@ -89,8 +88,10 @@ def main():
             continue
     for t in threads:
         t.start()
+    """
     for t in threads:
         t.join()
+    """
     for ras in rass:
         del ras
 

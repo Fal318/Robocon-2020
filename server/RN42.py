@@ -69,7 +69,7 @@ class RN42:
         self.__sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)  # config
 
     def connectBluetooth(self, bdAddr, port):
-        #for _ in range(4):
+        # for _ in range(4):
         while True:
             try:
                 self.__sock.connect((bdAddr, port))
