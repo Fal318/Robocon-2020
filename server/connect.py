@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-# RN42.py
 from time import sleep
-import sys
-import bluetooth
+import bluetooth as bt
 
 
 class RN42:
     def __init__(self, name, addr, num):
-        """ Arduino with RN42"""
-        self.__name = name  # Set Name
-        self.__bdAddr = addr  # the address form the Arduino RN42
-        self.__port = num  # Connect Port (RaspberryPi  to Arduino)
-        self.__sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)  # config
+        self.__name = name          
+        self.__bdAddr = addr  
+        self.__port = num  
+        self.__sock = bt.BluetoothSocket(bt.RFCOMM) 
 
     @property
     def name(self):
@@ -66,14 +63,15 @@ class RN42:
     def reConnect(self, addr, num):
         self.__bdAddr = addr  # the address form the Arduino RN42
         self.__port = num  # Connect Port (RaspberryPi  to Arduino)
-        self.__sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)  # config
+        self.__sock = bt.BluetoothSocket(bt.RFCOMM)  
 
     def connectBluetooth(self, bdAddr, port):
         for _ in range(4):
             try:
-                self.__sock.connect((bdAddr, port))
-                sleep(2)
-            except bluetooth.BluetoothError:
+                if type(self.__sock) == bt.BluetoothSocket:
+                    self.__sock.connect((bdAddr, port))
+                    sleep(2)
+            except bt.BluetoothError:
                 self.reConnect(bdAddr, port)
                 sleep(0.5)
             except KeyboardInterrupt:
@@ -84,4 +82,3 @@ class RN42:
 
     def disConnect(self, sock=None):
         self.__sock.close()
-        # sock.close()

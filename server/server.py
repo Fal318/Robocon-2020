@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 import csv
-import sys
 import time
 import random
-import struct
-import traceback
 import threading
 import bluetooth as bt
-import RN42
+import connect
 import address
 
 PERIOD = 0.2
@@ -24,7 +21,7 @@ class Connection:
             self.aivable = False
             return
 
-        self.ras = RN42.RN42("ras{0}".format(
+        self.ras = connect.Connect("ras{0}".format(
             self.id), self.addr, self.id+1)
         if self.ras.connectBluetooth(self.ras.bdAddr, self.ras.port):
             self.aivable = True
@@ -42,8 +39,10 @@ class Connection:
         self.ras.sock.send((self.data).to_bytes(1, "little"))
         self.res_data.append([time.time(), self.data])
         print("target={0} send:{1}".format(self.id, self.data))
+
     def send_arr(self):
         pass
+
     def receive(self):
         self.rcv_data = int.from_bytes(self.ras.sock.recv(1024), "little")
         print("host:{0} recv:{1}".format(self.id, self.rcv_data))

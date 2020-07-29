@@ -43,7 +43,6 @@ for i in range(len(cdata)):
         compares[i][1].append(float(s[0])-float(lastdata[1]))
         compares[i][2].append(abs(float(s[0])-float(c[0])))
         lastdata = [c[0], s[0]]
-
 for compare in compares:
     plt.hist(compare[0], bins=20)
     plt.title("Send")
