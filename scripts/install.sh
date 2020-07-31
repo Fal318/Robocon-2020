@@ -21,3 +21,7 @@ cd bluez-5.54/
 make -j$(nproc)
 yes | sudo make install
 sudo pip3 install pybluez
+
+rm -rf bluez-5.54.tar.xz
+rm -rf bluez-5.54.tar
+rm -rf bluez-5.54
