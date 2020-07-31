@@ -4,8 +4,8 @@ import time
 import random
 import threading
 import bluetooth as bt
-import connect
-import address
+from ..library import connect
+from ..config import address as ad
 
 PERIOD = 0.2
 LOOP = 500
@@ -16,7 +16,7 @@ class Connection:
         self.res_data = []
         self.id = i
         try:
-            self.addr = address.client_address[i]
+            self.addr = ad.client_address[i]
         except IndexError:
             self.aivable = False
             return

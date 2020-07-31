@@ -2,7 +2,7 @@ import csv
 import time
 import traceback as tr
 import bluetooth as bt
-import address as ad
+from ..config import address as ad
 
 addr = ad.server_address
 PORT = 1

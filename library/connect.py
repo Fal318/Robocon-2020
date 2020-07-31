@@ -3,12 +3,12 @@ from time import sleep
 import bluetooth as bt
 
 
-class RN42:
+class Connect:
     def __init__(self, name, addr, num):
-        self.__name = name          
-        self.__bdAddr = addr  
-        self.__port = num  
-        self.__sock = bt.BluetoothSocket(bt.RFCOMM) 
+        self.__name = name
+        self.__bdAddr = addr
+        self.__port = num
+        self.__sock = bt.BluetoothSocket(bt.RFCOMM)
 
     @property
     def name(self):
@@ -61,9 +61,9 @@ class RN42:
         self.__sock = value
 
     def reConnect(self, addr, num):
-        self.__bdAddr = addr  # the address form the Arduino RN42
-        self.__port = num  # Connect Port (RaspberryPi  to Arduino)
-        self.__sock = bt.BluetoothSocket(bt.RFCOMM)  
+        self.__bdAddr = addr
+        self.__port = num
+        self.__sock = bt.BluetoothSocket(bt.RFCOMM)
 
     def connectBluetooth(self, bdAddr, port):
         for _ in range(4):
