@@ -1,18 +1,20 @@
 # ROBOCON2020
-- [スクリプトをまとめたディレクトリ](./scripts)
+- [スクリプト関連のディレクトリ](./scripts)
     - [環境構築用スクリプト](./scripts/install.sh)
 
-- [サーバー側のファイルをまとめたディレクトリ](./server)
+- [設定ファイル関連のディレクトリ](./config)
+    - [各通信機器のアドレスを保持したファイル](./config/address.py)
+
+- [サーバー側関連のディレクトリ](./server)
     - [送信する値と楽器の状態をまとめたファイル](./server/instrument.py)
-    - [各通信機器のアドレスを保持したファイル](./server/address.py)
-    - [通信関連をクラス化したファイル](./server/RN42.py)
-    - [PCで実行する用のファイル](./server/server.py)
+    - [PCで実行するファイル](./server/server.py)
 
-- [クライアント側のファイルをまとめたディレクトリ](./client)
+- [クライアント側関連のディレクトリ](./client)
     - [送信する値と楽器の状態をまとめたファイル](./client/instrument.py)
-    - [各通信機器のアドレスを保持したファイル](./client/address.py)
-    - [通信関連をクラス化したファイル](./client/RN42.py)
-    - [クライアント側で実行する用のファイル](./client/client_0.py)
+    - [クライアント側で実行するファイル](./client/client_0.py)
 
-- [データを可視化するためのファイルをまとめたディレクトリ](./compare)
-    - [ログを可視化するファイル](./compare.py)
+- [ライブラリ関連のディレクトリ](./library)
+    - [通信関連のライブラリ](./library/connect.py)
+
+- [解析関連のディレクトリ](./compare)
+    - [ログを可視化するファイル](./compare/compare.py)
