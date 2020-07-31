@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-
 import csv
 import statistics
 import matplotlib.pyplot as plt
 
-period = input("周期を入力してください")
 cfile, sfile = [], []
 ccsv, scsv = [], []
 for i in range(3):

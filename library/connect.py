@@ -4,10 +4,10 @@ import bluetooth as bt
 
 
 class Connect:
-    def __init__(self, name, addr, num):
+    def __init__(self, name, addr, port):
         self.__name = name
         self.__bdAddr = addr
-        self.__port = num
+        self.__port = port
         self.__sock = bt.BluetoothSocket(bt.RFCOMM)
 
     @property
