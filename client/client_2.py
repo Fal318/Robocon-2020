@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import csv
 import time
 import traceback as tr
@@ -41,6 +42,8 @@ class Connection:
     def __del__(self):
         self.write_logs()
         self.ras.disConnect()
+
+
 def main():
     ras = Connection()
     while True:
@@ -49,6 +52,7 @@ def main():
         except bt.BluetoothError:
             break
     del ras
+
 
 if __name__ == '__main__':
     main()

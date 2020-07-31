@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 client_address = [
     "DC:A6:32:70:DB:03",
     "B8:27:EB:2F:10:B6",
