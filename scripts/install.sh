@@ -10,18 +10,14 @@ yes | sudo apt install libical-dev
 yes | sudo apt install libreadline-dev
 yes | sudo apt install libdbus-glib-1-dev
 yes | sudo apt install libbluetooth-dev
-
 cd ~/
 wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.54.tar.xz
-
-xz -dv bluez-5.54.tar.xz
-tar -xf bluez-5.54.tar
+tar Jxfv bluez-5.54.tar.xz
 cd bluez-5.54/
 ./configure --enable-experimental
 make -j$(nproc)
 yes | sudo make install
+cd ~/
 sudo pip3 install pybluez
-
-rm -rf bluez-5.54.tar.xz
-rm -rf bluez-5.54.tar
 rm -rf bluez-5.54
+rm -rf bluez-5.54.tar.xz
