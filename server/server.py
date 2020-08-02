@@ -93,8 +93,10 @@ class Connection:
                 break
 
     def __del__(self):
-        self.write_logs()
         self.ras.disConnect()
+        if self.aivable:
+            return
+        self.write_logs()
 
 
 def main():
