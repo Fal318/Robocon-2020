@@ -32,7 +32,7 @@ class Connection:
         try:
             self.ras = connect.Connect("ras{0}".format(
                 self.proc_id), ad.CLIENT[i], self.proc_id+1)
-            if self.ras.connectBluetooth(self.ras.bdAddr, self.ras.port):
+            if self.ras.connectbluetooth(self.ras.bdaddr, self.ras.port):
                 self.aivable = True
                 print("Connect")
             else:
@@ -93,7 +93,7 @@ class Connection:
                 break
 
     def __del__(self):
-        self.ras.disConnect()
+        self.ras.disconnect()
         if self.aivable:
             return
         self.write_logs()

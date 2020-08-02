@@ -22,7 +22,7 @@ class Connection:
         self.send_data = []
         self.ras = connect.Connect("sev", ad.SERVER, PORT)
         while True:
-            if self.ras.connectBluetooth(self.ras.bdAddr, self.ras.port):
+            if self.ras.connectbluetooth(self.ras.bdaddr, self.ras.port):
                 break
 
     def send(self, value):
@@ -53,7 +53,7 @@ class Connection:
 
     def __del__(self):
         self.write_logs()
-        self.ras.disConnect()
+        self.ras.disconnect()
 
 
 def main():
