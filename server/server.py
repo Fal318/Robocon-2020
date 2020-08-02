@@ -7,8 +7,8 @@ import threading
 import bluetooth as bt
 import address as ad
 from library import connect
-PERIOD = 0.2
-LOOP = 500
+PERIOD: float = 0.2
+LOOP: int = 500
 
 """
 PERIOD:実行周期(sec)
@@ -26,8 +26,8 @@ class Connection:
         self.file = None
         self.sendtime = None
         self.rcv_data = None
-        self.send_data = []
-        self.proc_id = i
+        self.send_data: list = []
+        self.proc_id: int = i
 
         try:
             self.ras = connect.Connect("ras{0}".format(
@@ -41,7 +41,7 @@ class Connection:
         except IndexError:
             self.aivable = False
 
-    def is_aivable(self):
+    def is_aivable(self) -> bool:
         """
         プロセスが有効かどうかを返す関数
         """

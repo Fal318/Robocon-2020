@@ -12,7 +12,7 @@ class Connect:
 
     @property
     def name(self):
-        pass
+        return
 
     @name.getter
     def name(self):
@@ -24,7 +24,7 @@ class Connect:
 
     @property
     def bdAddr(self):
-        pass
+        return
 
     @bdAddr.getter
     def bdAddr(self):
@@ -37,7 +37,7 @@ class Connect:
 
     @property
     def port(self):
-        pass
+        return
 
     @port.getter
     def port(self):
@@ -50,7 +50,7 @@ class Connect:
 
     @property
     def sock(self):
-        pass
+        return
 
     @sock.getter
     def sock(self):
