@@ -12,9 +12,9 @@ yes | sudo apt install libdbus-glib-1-dev
 yes | sudo apt install libbluetooth-dev
 wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.54.tar.xz
 tar Jxfv bluez-5.54.tar.xz
-cd bluez-5.54/
+cd ./bluez-5.54/ || exit
 ./configure --enable-experimental
-make -j$(nproc)
+make -j "$(nproc)"
 yes | sudo make install
 cd ../
 sudo pip3 install pybluez
