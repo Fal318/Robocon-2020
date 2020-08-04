@@ -10,9 +10,7 @@ PORT = 2
 
 
 class Connection:
-    """
-    通信関連のクラス
-    """
+    """通信関連のクラス"""
 
     def __init__(self):
         self.data = None
@@ -26,9 +24,7 @@ class Connection:
                 break
 
     def send(self, value):
-        """
-        データ(整数値)を送信する関数
-        """
+        """データ(整数値)を送信する関数"""
         self.data = value
         self.sendtime = time.time()
         self.ras.sock.send((self.data).to_bytes(1, "little"))
@@ -36,17 +32,13 @@ class Connection:
         print("send:{0}".format(self.data))
 
     def receive(self):
-        """
-        データを受信する関数
-        """
+        """データを受信する関数"""
         self.data = int.from_bytes(self.ras.sock.recv(1024), "little")
         self.recv_data.append([time.time(), self.data])
         print("host:{0} recv:{1}".format("server", self.data))
 
     def write_logs(self):
-        """
-        送受信のログをcsvに書き込む関数
-        """
+        """送受信のログをcsvに書き込む関数"""
         self.file = open(f"../log/cdata{PORT-1}.csv", "w")
         csv.writer(self.file).writerows(self.recv_data)
         self.file.close()
@@ -57,9 +49,7 @@ class Connection:
 
 
 def main():
-    """
-    main
-    """
+    """メイン"""
     ras = Connection()
     while True:
         try:
