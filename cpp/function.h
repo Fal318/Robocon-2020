@@ -29,4 +29,6 @@ int get_random_value(int min, int max) {
     std::uniform_int_distribution<> get_rand(min, max);
     return get_rand(mt);
 }
+
+
 #endif
