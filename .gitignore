@@ -1,4 +1,5 @@
-*.csv
 __pycache__/
-*.o
+.vscode/
 tmp/
+*.csv
+*.out
