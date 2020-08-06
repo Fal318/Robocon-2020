@@ -1,4 +1,5 @@
 """クライアント側"""
+import sys
 import csv
 import time
 import bluetooth as bt
@@ -6,7 +7,11 @@ import address as ad
 from library import connect
 
 
-PORT = 3
+args = sys.argv
+if len(args) != 2:
+    print("ポート番号を引数で入力してください")
+    sys.exit(1)
+PORT = int(args[1])
 
 
 class Connection:
