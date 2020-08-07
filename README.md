@@ -4,18 +4,17 @@
   - [環境構築用スクリプト](./scripts/install.sh)
 
 - [設定ファイル関連のディレクトリ](./config)
-  - [各通信機器のアドレスを保持したファイル](./config/address.py)
+  - [各通信機器のアドレス](./config/address.py)
 
 - [サーバー側関連のディレクトリ](./server)
-  - [送信する値と楽器の状態をまとめたファイル](./server/instrument.py)
   - [PCで実行するファイル](./server/server.py)
 
 - [クライアント側関連のディレクトリ](./client)
-  - [送信する値と楽器の状態をまとめたファイル](./client/instrument.py)
-  - [クライアント側で実行するファイル](./client/client_0.py)
+  - [クライアント側の代用](./client/client_0.py)
 
-- [ライブラリ関連のディレクトリ](./library)
-  - [通信関連のライブラリ](./library/connect.py)
+- [ライブラリ関連のディレクトリ](./server/library)
+  - [通信関連のライブラリ](./server/library/connect.py)
+  - [音階と整数値の対応をまとめたファイル](./server/library/key.py)
 
 - [解析関連のディレクトリ](./compare)
   - [ログを可視化するファイル](./compare/compare.py)
