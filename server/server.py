@@ -3,6 +3,7 @@
 import csv
 import time
 import random
+import logging
 import threading
 import bluetooth as bt
 import address as ad
@@ -36,10 +37,10 @@ class Connection:
 
             if self.ras.connectbluetooth(self.ras.bdaddr, self.ras.port):
                 self.aivable = True
-                print("Connect")
+                logging.info("Connect")
             else:
                 self.aivable = False
-                print("Connection Failed")
+                logging.warning("Connection Failed")
         except IndexError:
             self.aivable = False
 
@@ -52,7 +53,7 @@ class Connection:
         self.sendtime = time.time()
         self.ras.sock.send((data).to_bytes(1, "little"))
         self.send_data.append([time.time(), data])
-        print("target={0} send:{1}".format(self.proc_id, data))
+        logging.info("target={0} send:{1}".format(self.proc_id, data))
 
     def receive(self):
         """データを受信する関数"""
@@ -73,10 +74,10 @@ class Connection:
                 self.send(random.randint(0, 255))
                 time.sleep(PERIOD - (time.time() - self.sendtime))
             except KeyboardInterrupt:
-                print("Connection Killed")
+                logging.info("Connection Killed")
                 break
             except bt.BluetoothError:
-                print("Connection Killed")
+                logging.info("Connection Killed")
                 break
 
     def __del__(self):
@@ -89,7 +90,7 @@ class Connection:
 def main():
     """メイン"""
     if len(ad.CLIENT) < TARGET:
-        print("len(address) < TARGET")
+        logging.error("len(address) < TARGET")
         return
     rass, threads = [], []
     for i in range(TARGET):

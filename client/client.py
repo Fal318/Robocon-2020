@@ -2,6 +2,7 @@
 import sys
 import csv
 import time
+import logging
 import bluetooth as bt
 import address as ad
 from library import connect
@@ -9,7 +10,7 @@ from library import connect
 
 args = sys.argv
 if len(args) != 2:
-    print("ポート番号を引数で入力してください")
+    logging.info("ポート番号を引数で入力してください")
     sys.exit(1)
 PORT = int(args[1])
 
@@ -34,13 +35,13 @@ class Connection:
         self.sendtime = time.time()
         self.ras.sock.send((self.data).to_bytes(1, "little"))
         self.send_data.append([time.time(), self.data])
-        print("send:{0}".format(self.data))
+        logging.info("send:{0}".format(self.data))
 
     def receive(self):
         """データを受信する関数"""
         self.data = int.from_bytes(self.ras.sock.recv(1024), "little")
         self.recv_data.append([time.time(), self.data])
-        print("host:{0} recv:{1}".format("server", self.data))
+        logging.info("host:{0} recv:{1}".format("server", self.data))
 
     def write_logs(self):
         """送受信のログをcsvに書き込む関数"""
