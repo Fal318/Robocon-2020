@@ -14,3 +14,4 @@ cd ../
 sudo pip3 install pybluez
 rm -rf bluez-5.54
 rm -rf bluez-5.54.tar.xz
+pip3 install pretty_midi
