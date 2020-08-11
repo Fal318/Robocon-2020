@@ -1,5 +1,13 @@
 # ROBOCON2020
 - [スクリプト関連のディレクトリ](./scripts)
+  - [環境構築用スクリプト](./scripts/install.sh)
 - [サーバー側関連のディレクトリ](./server)
+  - [PCで実行するファイル](.//server/server.py)
+  - [通信関連のライブラリ](.//server/library/connect.py)
+  - [音階と整数値の対応をまとめたファイル](.//server/library/key.py)
+  - [各通信機器のアドレス](.//server/address.py)
 - [クライアント側関連のディレクトリ](./client)
+  - [クライアント側の代用](./client/client.py)
+  - [各通信機器のアドレス](./client/address.py)
 - [解析関連のディレクトリ](./compare)
+  - [ログを可視化するファイル](./compare/compare.py)

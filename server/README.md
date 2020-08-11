@@ -1,4 +1,0 @@
-- [PCで実行するファイル](./server.py)
-- [通信関連のライブラリ](./library/connect.py)
-- [音階と整数値の対応をまとめたファイル](./library/key.py)
-- [各通信機器のアドレス](./address.py)
