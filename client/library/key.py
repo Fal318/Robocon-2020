@@ -38,6 +38,9 @@ KEY = {
         "O": 11, "Om": 23, "O7": 35, "Om7": 47, "Odm": 59
     },
 }
+PITCH = {
+    
+}
 
 if __name__ == "__main__":
     value = []
