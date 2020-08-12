@@ -81,11 +81,11 @@ class Connect:
 
     def connectbluetooth(self, bdaddr, port) -> bool:
         """connect"""
-        for _ in range(100):
+        for _ in range(4):
             try:
                 if isinstance(self.__sock, bt.BluetoothSocket):
                     self.__sock.connect((bdaddr, port))
-                    sleep(2)
+                    sleep(1)
             except bt.BluetoothError:
                 self.reconnect(bdaddr, port)
                 sleep(0.5)

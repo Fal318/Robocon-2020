@@ -3,12 +3,11 @@
 import csv
 import time
 import random
-import logging
 import threading
 import bluetooth as bt
 import address as ad
 from library import connect
-PERIOD: float = 0.2
+PERIOD: float = 0.05
 LOOP: int = 500
 TARGET: int = 2
 
@@ -37,10 +36,10 @@ class Connection:
 
             if self.ras.connectbluetooth(self.ras.bdaddr, self.ras.port):
                 self.aivable = True
-                logging.info("Connect")
+                print("Connect")
             else:
                 self.aivable = False
-                logging.warning("Connection Failed")
+                print("Connection Failed")
         except IndexError:
             self.aivable = False
 
@@ -48,14 +47,14 @@ class Connection:
         """プロセスが有効かどうかを返す関数"""
         return self.aivable
 
-    def send(self, data):
+    def sender(self, data):
         """データ(整数値)を送信する関数"""
         self.sendtime = time.time()
         self.ras.sock.send((data).to_bytes(1, "little"))
         self.send_data.append([time.time(), data])
-        logging.info("target={0} send:{1}".format(self.proc_id, data))
+        print("target={0} send:{1}".format(self.proc_id, data))
 
-    def receive(self):
+    def receiveer(self):
         """データを受信する関数"""
         self.rcv_data.append(int.from_bytes(
             self.ras.sock.recv(1024), "little"))
@@ -67,37 +66,37 @@ class Connection:
         csv.writer(self.file).writerows(self.send_data)
         self.file.close()
 
-    def main_process(self):
+    def main_process(self, send_arr:list):
         """メインプロセス"""
-        for _ in range(LOOP):
+        for send in send_arr:
             try:
-                self.send(random.randint(0, 255))
+                self.sender(send)
                 time.sleep(PERIOD - (time.time() - self.sendtime))
             except KeyboardInterrupt:
-                logging.info("Connection Killed")
+                print("Connection Killed")
                 break
             except bt.BluetoothError:
-                logging.info("Connection Killed")
+                print("Connection Killed")
                 break
 
     def __del__(self):
         self.ras.disconnect()
         if self.aivable:
-            return
-        self.write_logs()
+            self.write_logs()
 
 
 def main():
     """メイン"""
     if len(ad.CLIENT) < TARGET:
-        logging.error("len(address) < TARGET")
+        print("len(address) < TARGET")
         return
     rass, threads = [], []
+    data = [[random.randint(1,255) for _ in range(1000)]]*2
     for i in range(TARGET):
         ras = Connection(i)
         if ras.is_aivable():
             rass.append(ras)
-            thread = threading.Thread(target=ras.main_process)
+            thread = threading.Thread(target=ras.main_process, args=([data[i]]))
             threads.append(thread)
 
     for thread in threads:
