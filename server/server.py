@@ -68,19 +68,17 @@ class Connection:
 
     def main_process(self, send_arr: list):
         """メインプロセス"""
-        for send in send_arr:
-            try:
+        try:
+            for send in send_arr:
                 self.sender(send)
                 time.sleep(PERIOD - (time.time() - self.sendtime))
-            except KeyboardInterrupt:
-                self.sender(0)
-                print("Connection Killed")
-                break
-            except bt.BluetoothError:
-                print("Connection Killed")
-                break
-            else:
-                self.sender(0)
+        except KeyboardInterrupt:
+            self.sender(0)
+            print("Connection Killed")
+        except bt.BluetoothError:
+            print("Connection Killed")
+        else:
+            self.sender(0)
 
     def __del__(self):
         self.ras.disconnect()
