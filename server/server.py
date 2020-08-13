@@ -66,18 +66,21 @@ class Connection:
         csv.writer(self.file).writerows(self.send_data)
         self.file.close()
 
-    def main_process(self, send_arr:list):
+    def main_process(self, send_arr: list):
         """メインプロセス"""
         for send in send_arr:
             try:
                 self.sender(send)
                 time.sleep(PERIOD - (time.time() - self.sendtime))
             except KeyboardInterrupt:
+                self.sender(0)
                 print("Connection Killed")
                 break
             except bt.BluetoothError:
                 print("Connection Killed")
                 break
+            else:
+                self.sender(0)
 
     def __del__(self):
         self.ras.disconnect()
@@ -91,12 +94,13 @@ def main():
         print("len(address) < TARGET")
         return
     rass, threads = [], []
-    data = [[random.randint(1,255) for _ in range(1000)]]*2
+    data = [[random.randint(1, 255) for _ in range(1000)]]*2
     for i in range(TARGET):
         ras = Connection(i)
         if ras.is_aivable():
             rass.append(ras)
-            thread = threading.Thread(target=ras.main_process, args=([data[i]]))
+            thread = threading.Thread(
+                target=ras.main_process, args=([data[i]]))
             threads.append(thread)
 
     for thread in threads:

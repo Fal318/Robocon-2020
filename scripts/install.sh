@@ -11,7 +11,6 @@ cd ./bluez-5.54/ || exit
 make -j "$(nproc)"
 yes | sudo make install
 cd ../
-sudo pip3 install pybluez
+sudo pip3 install pybluez  pretty_midi
 rm -rf bluez-5.54
 rm -rf bluez-5.54.tar.xz
-pip3 install pretty_midi

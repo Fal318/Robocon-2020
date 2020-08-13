@@ -13,13 +13,15 @@ try:
     server_socket.listen(1)
     client_socket, address = server_socket.accept()
     print("Connect")
-    while True:
+    data = 1
+    while data != 0:
         data = int.from_bytes(client_socket.recv(1024), "little")
         recv_data.append([time.time(), data])
         print(f"recv:{data}")
 except KeyboardInterrupt:
     print("Connection Killed")
-
+else:
+    print("Connection Ended")
 
 file = open("../log/cdata{0}.csv".format(PORT-1), "w")
 
