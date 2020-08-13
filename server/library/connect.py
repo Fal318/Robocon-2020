@@ -88,7 +88,7 @@ class Connect:
                     sleep(1)
             except bt.BluetoothError:
                 self.reconnect(bdaddr, port)
-                sleep(0.5)
+                sleep(0.25)
             except KeyboardInterrupt:
                 break
             else:

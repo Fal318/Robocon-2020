@@ -7,7 +7,7 @@ import threading
 import bluetooth as bt
 import address as ad
 from library import connect
-PERIOD: float = 0.05
+PERIOD: float = 0.1
 LOOP: int = 500
 TARGET: int = 2
 
@@ -75,6 +75,9 @@ class Connection:
         except KeyboardInterrupt:
             self.sender(0)
             print("Connection Killed")
+        except ValueError:
+            self.sender(0)
+            print("周期が早すぎます")
         except bt.BluetoothError:
             print("Connection Killed")
         else:
