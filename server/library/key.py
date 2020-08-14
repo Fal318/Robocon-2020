@@ -1,41 +1,44 @@
 """key.py"""
 # -*- coding: utf-8 -*-
+
+KEYNAME = ["C", "CS", "D", "DS", "E", "F", "FS", "G", "GS", "A", "AS", "B"]
+
 KEY = {
     "C": {
-        "O": 0, "Om": 12, "O7": 24, "Om7": 36, "Odm": 48
+        "O": 4, "Om": 16, "O7": 28, "Om7": 40, "Odm": 52,
     },
     "CS": {
-        "O": 1, "Om": 13, "O7": 25, "Om7": 37, "Odm": 49
+        "O": 5, "Om": 17, "O7": 29, "Om7": 41, "Odm": 53,
     },
     "D": {
-        "O": 2, "Om": 14, "O7": 26, "Om7": 38, "Odm": 50
+        "O": 6, "Om": 18, "O7": 30, "Om7": 42, "Odm": 54,
     },
     "DS": {
-        "O": 3, "Om": 15, "O7": 27, "Om7": 39, "Odm": 51
+        "O": 7, "Om": 19, "O7": 31, "Om7": 43, "Odm": 55,
     },
     "E": {
-        "O": 4, "Om": 16, "O7": 28, "Om7": 40, "Odm": 52
+        "O": 8, "Om": 20, "O7": 32, "Om7": 44, "Odm": 56,
     },
     "F": {
-        "O": 5, "Om": 17, "O7": 29, "Om7": 41, "Odm": 53
+        "O": 9, "Om": 21, "O7": 33, "Om7": 45, "Odm": 57,
     },
     "FS": {
-        "O": 6, "Om": 18, "O7": 30, "Om7": 42, "Odm": 54
+        "O": 10, "Om": 22, "O7": 34, "Om7": 46, "Odm": 58,
     },
     "G": {
-        "O": 7, "Om": 19, "O7": 31, "Om7": 43, "Odm": 55
+        "O": 11, "Om": 23, "O7": 35, "Om7": 47, "Odm": 59,
     },
     "GS": {
-        "O": 8, "Om": 20, "O7": 32, "Om7": 44, "Odm": 56
+        "O": 12, "Om": 24, "O7": 36, "Om7": 48, "Odm": 60,
     },
     "A": {
-        "O": 9, "Om": 21, "O7": 33, "Om7": 45, "Odm": 57
+        "O": 13, "Om": 25, "O7": 37, "Om7": 49, "Odm": 61,
     },
     "AS": {
-        "O": 10, "Om": 22, "O7": 34, "Om7": 46, "Odm": 58
+        "O": 14, "Om": 26, "O7": 38, "Om7": 50, "Odm": 62,
     },
     "B": {
-        "O": 11, "Om": 23, "O7": 35, "Om7": 47, "Odm": 59
+        "O": 15, "Om": 27, "O7": 39, "Om7": 51, "Odm": 63,
     },
 }
 
@@ -61,16 +64,64 @@ PITCH = {
     123: "DS", 124: "E", 125: "F", 126: "FS", 127: "G",
 
 }
+CHORD = {
+    "O": {
+        "C": ["C"], "CS": ["CS"],
+        "D": ["D"], "DS": ["DS"],
+        "E": ["E"], "F": ["F"],
+        "FS": ["FS"], "G": ["G"],
+        "GS": ["GS"], "A": ["A"],
+        "AS": ["AS"], "B": ["B"],
+    },
+    "Om": {
+        "C": ["C", "E", "G"], "CS": ["CS", "ES", "GS"],
+        "D": ["D", "FS", "A"], "DS": ["DS", "F", "AS"],
+        "E": ["E", "GS", "B"], "F": ["F", "A", "C"],
+        "FS": ["FS", "AS", "CS"], "G": ["G", "B", "D"],
+        "GS": ["GS", "BS", "DS"], "A": ["A", "CS", "E"],
+        "AS": ["AS", "CS", "ES"], "B": ["B", "DS", "FS"]
+    },
+    "O7": {
+        "C": ["AS", "G", "E", "C"], "CS": ["B", "GS", "ES", "CS"],
+        "D": ["C", "A", "FS", "D"], "DS": ["CS", "AS", "G", "DS"],
+        "E": ["D", "B", "GS", "E"], "F": ["DS", "C", "A", "F"],
+        "FS": ["E", "CS", "AS", "FS"], "G": ["F", "D", "B", "G"],
+        "GS": ["FS", "DS", "C", "GS"], "A": ["G", "E", "CS", "A"],
+        "AS": ["GS", "F", "D", "AS"], "B": ["A", "FS", "DS", "B"]
+    },
+    "Om7": {
+        "C": ["B", "G", "E", "C"], "CS": ["BS", "GS", "ES", "CS"],
+        "D": ["CS", "A", "FS", "D"], "DS": ["D", "AS", "G", "DS"],
+        "E": ["DS", "B", "GS", "E"], "F": ["E", "C", "A", "F"],
+        "FS": ["F", "CS", "AS", "FS"], "G": ["FS", "D", "B", "G"],
+        "GS": ["G", "DS", "C", "GS"], "A": ["GS", "E", "CS", "A"],
+        "AS": ["A", "F", "D", "AS"], "B": ["AS", "FS", "DS", "B"]
 
-CODE = {
-
+    },
+    "Odm": {
+        "C": ["FS", "DS", "C"], "CS": ["G", "E", "CS"],
+        "D": ["GS", "F", "D"], "DS": ["A", "FS", "DS"],
+        "E": ["AS", "G", "E"], "F": ["B", "GS", "F"],
+        "FS": ["G", "AS", "CS"], "G": ["CS", "GS", "G"],
+        "GS": ["D", "B", "GS"], "A": ["DS", "C", "A"],
+        "AS": ["E", "CS", "AS"], "B": ["F", "D", "B"]
+    },
 }
-if __name__ == "__main__":
-    value = []
-    for key in KEY:
-        for k in KEY[key].keys():
-            value.append(KEY[key][k])
-    if len(value) != len(list(set(value))):
-        print("重複あり")
+
+
+def key_to_chord(key: list = []):
+    return
+
+
+def chord_to_value(key: list = [], stroke: bool = False):
+    chord = key_to_chord(key)
+    if chord == 0:
+        return 1
+    if stroke:
+        return chord + 3
     else:
-        print("重複なし")
+        return chord + 1
+
+
+if __name__ == "__main__":
+    pass

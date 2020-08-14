@@ -57,7 +57,7 @@ class Connection:
     def receiveer(self):
         """データを受信する関数"""
         self.rcv_data.append(int.from_bytes(
-            self.ras.sock.recv(1024), "little"))
+            self.ras.sock.recv(64), "little"))
         print("host:{0} recv:{1}".format(self.proc_id, self.rcv_data[-1]))
 
     def write_logs(self):
@@ -95,7 +95,7 @@ def main():
         print("len(address) < TARGET")
         return
     rass, threads = [], []
-    data = [[random.randint(1, 255) for _ in range(1000)]]*2
+    data = [[random.randint(0, 63) for _ in range(1000)]]*2
     for i in range(TARGET):
         ras = Connection(i)
         if ras.is_aivable():

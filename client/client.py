@@ -15,7 +15,7 @@ try:
     print("Connect")
     data = 1
     while data != 0:
-        data = int.from_bytes(client_socket.recv(1024), "little")
+        data = int.from_bytes(client_socket.recv(64), "little")
         recv_data.append([time.time(), data])
         print(f"recv:{data}")
 except KeyboardInterrupt:
