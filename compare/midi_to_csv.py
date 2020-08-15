@@ -2,7 +2,7 @@ import csv
 import pretty_midi
 import key
 
-TARGET = 19
+TARGET = 6
 
 
 def ins_to_list(ins: pretty_midi.containers.Note):
