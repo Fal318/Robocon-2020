@@ -95,7 +95,7 @@ def main():
         print("len(address) < TARGET")
         return
     rass, threads = [], []
-    data = [[random.randint(0, 63) for _ in range(1000)]]*2
+    data = [[random.randint(1, 63) for _ in range(1000)]]*2
     for i in range(TARGET):
         ras = Connection(i)
         if ras.is_aivable():
