@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 import csv
 import pretty_midi
 import key
 
-TARGET = 6
+TARGET = 1000
 
 
 def ins_to_list(ins: pretty_midi.containers.Note):
@@ -18,25 +19,28 @@ def writer_csv(arrs: list):
 
 def main():
     midi_data = None
-
+    count = 0
     try:
-        midi_data = pretty_midi.PrettyMIDI("../midi/kanon.mid")
+        midi_data = pretty_midi.PrettyMIDI("../midi/robocon.mid")
     except:
         print("Error")
     inotes, chords = [], []
     for instrument in midi_data.instruments:
-        print(instrument.program)
+        print(instrument)#.program)
         if instrument.program == TARGET:
+            count += 1
             inote = instrument.notes
             for ins in inote:
                 if isinstance(type(ins), list):
                     continue
                 else:
                     inotes.append(ins_to_list(ins))
+        if count >= 2:
+            break
 
-    inotes.sort()
+    #inotes.sort()
 
-    index = 0
+    index= 0
     while index < len(inotes)-1:
         pitches = [inotes[index][2]]
 
@@ -51,9 +55,11 @@ def main():
             else:
                 index += 1
                 break
+            
         chord = key.pitch_to_chord(pitches)
         chords.append(chord)
         print(chord)
+    
     return chords
 
 

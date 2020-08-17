@@ -1,6 +1,7 @@
 __pycache__/
 .vscode/
 tmp/
+tmp.*
 *.csv
 *.out
 *.mid
