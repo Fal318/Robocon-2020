@@ -26,7 +26,7 @@ def main():
         print("Error")
     inotes, chords = [], []
     for instrument in midi_data.instruments:
-        print(instrument)#.program)
+        #print(instrument)#.program)
         if instrument.program == TARGET:
             count += 1
             inote = instrument.notes
