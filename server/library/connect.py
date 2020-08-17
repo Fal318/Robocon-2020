@@ -7,7 +7,7 @@ import bluetooth as bt
 class Connect:
     """BT"""
 
-    def __init__(self, name, addr, port):
+    def __init__(self, name: str, addr: str, port: int):
         self.__name = name
         self.__bdaddr = addr
         self.__port = port
@@ -19,12 +19,12 @@ class Connect:
         return
 
     @name.getter
-    def name(self):
+    def name(self) -> str:
         """getter"""
         return self.__name
 
     @name.setter
-    def name(self, name):
+    def name(self, name: str):
         """setter"""
         self.__name = name
 
@@ -34,7 +34,7 @@ class Connect:
         return
 
     @bdaddr.getter
-    def bdaddr(self):
+    def bdaddr(self) -> str:
         """getter"""
         return self.__bdaddr
 
@@ -54,7 +54,7 @@ class Connect:
         return self.__port
 
     @port.setter
-    def port(self, value):
+    def port(self, value: int):
         """setter"""
         self.__port = value
 
@@ -69,17 +69,17 @@ class Connect:
         return self.__sock
 
     @sock.setter
-    def sock(self, value):
+    def sock(self, value: int):
         """setter"""
         self.__sock = value
 
-    def reconnect(self, addr, num):
+    def reconnect(self, addr: str, num: int):
         """reconnect"""
         self.__bdaddr = addr
         self.__port = num
         self.__sock = bt.BluetoothSocket(bt.RFCOMM)
 
-    def connectbluetooth(self, bdaddr, port) -> bool:
+    def connectbluetooth(self, bdaddr: str, port: int) -> bool:
         """connect"""
         for _ in range(4):
             try:

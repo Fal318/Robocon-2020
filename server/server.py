@@ -7,32 +7,31 @@ import threading
 import bluetooth as bt
 import address as ad
 from library import connect
-PERIOD: float = 0.1
+
 LOOP: int = 500
 TARGET: int = 2
-
+PERIOD: float = 0.1
 """
-PERIOD:実行周期(sec)
 LOOP:実行回数(回)
 TARGET:接続する台数
+PERIOD:実行周期(sec)
 """
 
 
 class Connection:
     """通信を定周期で行うためのクラス"""
 
-    def __init__(self, i: int):
-
-        self.file = None  # ログを書き込むファイル
-        self.sendtime = None  # 最後に送信をした時間
+    def __init__(self, id_num: int):
         self.rcv_data: list = []  # 受け取ったデータ
         self.send_data: list = []  # 送ったデータ
-        self.proc_id: int = i  # プロセスを識別するID
+        self.file = None  # ログを書き込むファイル
+        self.sendtime = None  # 最後に送信をした時間
+        self.proc_id: int = id_num  # プロセスを識別するID
 
         try:
             # 通信用のインスタンスを生成
             self.ras = connect.Connect("ras{0}".format(
-                self.proc_id), ad.CLIENT[i], self.proc_id+1)
+                self.proc_id), ad.CLIENT[id_num], self.proc_id+1)
 
             if self.ras.connectbluetooth(self.ras.bdaddr, self.ras.port):
                 self.aivable = True
@@ -47,7 +46,7 @@ class Connection:
         """プロセスが有効かどうかを返す関数"""
         return self.aivable
 
-    def sender(self, data):
+    def sender(self, data: int):
         """データ(整数値)を送信する関数"""
         self.sendtime = time.time()
         self.ras.sock.send((data).to_bytes(1, "little"))
