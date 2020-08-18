@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import csv
+import pandas as pd
 import pretty_midi
 import key
 
-TARGET = 1000
+TARGET = 33
+SONG_TIME: int = 2550
 
 
 def ins_to_list(ins: pretty_midi.containers.Note):
@@ -11,22 +12,29 @@ def ins_to_list(ins: pretty_midi.containers.Note):
 
 
 def writer_csv(arrs: list):
-    with open('../server/data.csv', 'w') as f:
-        writer = csv.writer(f)
-        for arr in arrs:
-            writer.writerows(arr)
+    pd.Series(arrs).to_csv(f"../data/csv/data_{TARGET}.csv", index=False)
+
+
+def fix_arrays(arrs: list):
+    fixed_arrays = [None for _ in range(SONG_TIME)]
+    arrs.sort()
+    while len(arrs) > 0:
+        arr = arrs.pop(0)
+        start, stop = int(arr[0][0]), int(arr[0][1])
+        for i in range(start, stop):
+            fixed_arrays[i] = arr[1]
+    return fixed_arrays
 
 
 def main():
     midi_data = None
     count = 0
     try:
-        midi_data = pretty_midi.PrettyMIDI("../midi/robocon.mid")
+        midi_data = pretty_midi.PrettyMIDI("../data/midi/robocon.mid")
     except:
         print("Error")
     inotes, chords = [], []
     for instrument in midi_data.instruments:
-        #print(instrument)#.program)
         if instrument.program == TARGET:
             count += 1
             inote = instrument.notes
@@ -38,9 +46,7 @@ def main():
         if count >= 2:
             break
 
-    #inotes.sort()
-
-    index= 0
+    index = 0
     while index < len(inotes)-1:
         pitches = [inotes[index][2]]
 
@@ -55,13 +61,16 @@ def main():
             else:
                 index += 1
                 break
-            
+        start = inotes[index][0]*10
+        stop = inotes[index][1]*10
         chord = key.pitch_to_chord(pitches)
-        chords.append(chord)
+        chords.append([[start, stop], chord])
         print(chord)
-    
+
     return chords
 
 
 if __name__ == '__main__':
     chord = main()
+    farry = fix_arrays(chord)
+    writer_csv(farry)

@@ -7,8 +7,8 @@ cfile, sfile = [], []
 ccsv, scsv = [], []
 for i in range(3):
     try:
-        cfile.append(open("../log/sdata{0}.csv".format(i), "r"))
-        sfile.append(open("../log/sdata{0}.csv".format(i), "r"))
+        cfile.append(open("../data/log/sdata{0}.csv".format(i), "r"))
+        sfile.append(open("../data/log/sdata{0}.csv".format(i), "r"))
     except FileNotFoundError:
         continue
 

@@ -23,7 +23,7 @@ except KeyboardInterrupt:
 else:
     print("Connection Ended")
 
-file = open("../log/cdata{0}.csv".format(PORT-1), "w")
+file = open("../data/log/cdata{0}.csv".format(PORT-1), "w")
 
 w = csv.writer(file)
 w.writerows(recv_data)
