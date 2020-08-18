@@ -3,7 +3,7 @@ import pandas as pd
 import pretty_midi
 import key
 
-TARGET = 33
+TARGET = 11
 SONG_TIME: int = 2550
 
 
@@ -12,7 +12,8 @@ def ins_to_list(ins: pretty_midi.containers.Note):
 
 
 def writer_csv(arrs: list):
-    pd.Series(arrs).to_csv(f"../data/csv/data_{TARGET}.csv", index=False)
+    pd.Series(arrs).to_csv(
+        f"../data/csv/data_{TARGET}.csv", header=False, index=False)
 
 
 def fix_arrays(arrs: list):
