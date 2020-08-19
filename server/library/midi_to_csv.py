@@ -12,7 +12,7 @@ def ins_to_list(ins: pretty_midi.containers.Note):
 
 def writer_csv(arrs: list, ins_num: int):
     pd.Series(arrs).to_csv(
-        f"../data/csv/data_{ins_num}.csv", header=False, index=False)
+        f"../../data/csv/data_{ins_num}.csv", header=False, index=False)
 
 
 def fix_arrays(arrs: list):
@@ -30,7 +30,7 @@ def main(ins_num):
     midi_data = None
     inotes, chords = [], []
     try:
-        midi_data = pretty_midi.PrettyMIDI("../data/midi/robocon.mid")
+        midi_data = pretty_midi.PrettyMIDI("../../data/midi/robocon.mid")
     except:
         print("Error")
 

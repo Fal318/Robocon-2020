@@ -4,7 +4,7 @@ df_arrys = []
 header = []
 for i in range(0, 129):
     try:
-        df = pd.read_csv(f"../data/csv/data_{i}.csv")
+        df = pd.read_csv(f"../../data/csv/data_{i}.csv")
     except FileNotFoundError:
         continue
     else:
