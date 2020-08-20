@@ -1,5 +1,5 @@
-"""BT通信関連ライブラリ"""
 # -*- coding: utf-8 -*-
+"""BT通信ライブラリ"""
 from time import sleep
 import bluetooth as bt
 

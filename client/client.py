@@ -1,4 +1,5 @@
-"""クライアント側"""
+# -*- coding: utf-8 -*-
+"""クライアント側の代用"""
 import csv
 import time
 import bluetooth as bt
@@ -13,11 +14,12 @@ try:
     server_socket.listen(1)
     client_socket, address = server_socket.accept()
     print("Connect")
-    data = 1
-    while data != 0:
-        data = int.from_bytes(client_socket.recv(64), "little")
-        recv_data.append([time.time(), data])
-        print(f"recv:{data}")
+    while True:
+        rcv = int.from_bytes(client_socket.recv(64), "little")
+        recv_data.append([time.time(), rcv])
+        print(f"recv:{rcv}")
+        if rcv == 0:
+            break
 except KeyboardInterrupt:
     print("Connection Killed")
 else:

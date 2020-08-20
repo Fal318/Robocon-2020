@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+"""楽器ごとに分かれたCSVを一つにまとめる"""
 import pandas as pd
 
 df_arrys = []
@@ -15,5 +17,4 @@ for df in df_arrys:
     merged__df = pd.concat([merged__df, df], axis=1)
 
 merged__df.columns = header
-merged__df.to_csv(
-    f"../data/csv/merged.csv", index=False)
+merged__df.to_csv("../data/csv/merged.csv", index=False)

@@ -1,14 +1,12 @@
 """送信側のプログラム"""
 # -*- coding: utf-8 -*-
-import csv
 import time
-import random
 import threading
+import pandas as pd
 import bluetooth as bt
 import address as ad
 from library import connect
 
-LOOP: int = 500
 TARGET: int = 2
 PERIOD: float = 0.1
 """
@@ -18,20 +16,45 @@ PERIOD:実行周期(sec)
 """
 
 
+csv_data = pd.read_csv("../data/csv/merged.csv", header=0)
+print(csv_data)
+
+
+def csv_to_senddata(id_num: int) -> list:
+    """CSVから送信用データに変換する"""
+    program_nums = None
+    if id_num == 1:
+        program_nums = [33]
+    if id_num == 2:
+        program_nums = [37, 54, 70]
+    if program_nums is None:
+        return None
+    arrs = [[] for _ in range(len(program_nums))]
+
+    for (i, program_num) in enumerate(program_nums):
+        for sound in csv_data[str(program_num)]:
+            arrs[i].append(str(sound))
+    if id_num == 1:
+        return [[a if a != "nan" else "" for a in arr]for arr in arrs]
+    if id_num == 2:
+        return [[2 if a != "" else 1 for a in arr]for arr in arrs]
+    return None
+
+
 class Connection:
     """通信を定周期で行うためのクラス"""
 
-    def __init__(self, id_num: int):
+    def __init__(self, proc_id: int):
+        self.sending_data: list = csv_to_senddata(proc_id)  # 送るデータ
         self.rcv_data: list = []  # 受け取ったデータ
-        self.send_data: list = []  # 送ったデータ
         self.file = None  # ログを書き込むファイル
         self.sendtime = None  # 最後に送信をした時間
-        self.proc_id: int = id_num  # プロセスを識別するID
+        self.proc_id: int = proc_id  # プロセスを識別するID
 
         try:
             # 通信用のインスタンスを生成
             self.ras = connect.Connect("ras{0}".format(
-                self.proc_id), ad.CLIENT[id_num], self.proc_id+1)
+                self.proc_id), ad.CLIENT[proc_id], self.proc_id+1)
 
             if self.ras.connectbluetooth(self.ras.bdaddr, self.ras.port):
                 self.aivable = True
@@ -50,25 +73,18 @@ class Connection:
         """データ(整数値)を送信する関数"""
         self.sendtime = time.time()
         self.ras.sock.send((data).to_bytes(1, "little"))
-        self.send_data.append([time.time(), data])
         print("target={0} send:{1}".format(self.proc_id, data))
 
     def receiveer(self):
         """データを受信する関数"""
         self.rcv_data.append(int.from_bytes(
-            self.ras.sock.recv(64), "little"))
+            self.ras.sock.recv(1024), "little"))
         print("host:{0} recv:{1}".format(self.proc_id, self.rcv_data[-1]))
 
-    def write_logs(self):
-        """送受信のログをcsvに書き込む関数"""
-        self.file = open(f"../log/sdata{self.proc_id}.csv", "w")
-        csv.writer(self.file).writerows(self.send_data)
-        self.file.close()
-
-    def main_process(self, send_arr: list):
+    def main_process(self):
         """メインプロセス"""
         try:
-            for send in send_arr:
+            for send in self.sending_data:
                 self.sender(send)
                 time.sleep(PERIOD - (time.time() - self.sendtime))
         except KeyboardInterrupt:
@@ -84,8 +100,6 @@ class Connection:
 
     def __del__(self):
         self.ras.disconnect()
-        if self.aivable:
-            self.write_logs()
 
 
 def main():
@@ -94,13 +108,12 @@ def main():
         print("len(address) < TARGET")
         return
     rass, threads = [], []
-    data = [[random.randint(1, 63) for _ in range(1000)]]*2
     for i in range(TARGET):
         ras = Connection(i)
         if ras.is_aivable():
             rass.append(ras)
             thread = threading.Thread(
-                target=ras.main_process, args=([data[i]]))
+                target=ras.main_process)
             threads.append(thread)
 
     for thread in threads:

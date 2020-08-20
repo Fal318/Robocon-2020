@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""ログの解析"""
 import csv
 import statistics
 import matplotlib.pyplot as plt
@@ -19,12 +20,12 @@ cdata = [[] for _ in range(len(ccsv))]
 sdata = [[] for _ in range(len(scsv))]
 compares = [[[], [], []] for _ in range(len(cfile))]
 lags = []
-for i in range(len(ccsv)):
-    for row in ccsv[i]:
+for (i, cc) in enumerate(ccsv):
+    for row in cc:
         cdata[i].append(row)
 
-for i in range(len(scsv)):
-    for row in scsv[i]:
+for (i, sc) in enumerate(scsv):
+    for row in sc:
         sdata[i].append(row)
 
 for c, s in zip(cfile, sfile):
@@ -33,10 +34,10 @@ for c, s in zip(cfile, sfile):
 
 
 print(len(cdata))
-for i in range(len(cdata)):
-    lastdata = [cdata[i][0][0], sdata[i][0][0]]
+for (i, cd) in enumerate(cdata):
+    lastdata = [cd[i][0][0], sdata[i][0][0]]
     print(lastdata)
-    for c, s in zip(cdata[i][1:], sdata[i][1:]):
+    for c, s in zip(cd[1:], sdata[i][1:]):
         compares[i][0].append(float(c[0])-float(lastdata[0]))
         compares[i][1].append(float(s[0])-float(lastdata[1]))
         compares[i][2].append(abs(float(s[0])-float(c[0])))
