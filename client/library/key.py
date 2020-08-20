@@ -22,49 +22,39 @@ KEY = {
 
 CHORD = {
     # 単音
-    tuple(["C"]): "C", tuple(["C#"]): "C#", tuple(["D"]): "D", tuple(["D#"]): "D#",
-    tuple(["E"]): "E", tuple(["F"]): "F", tuple(["F#"]): "F#", tuple(["G"]): "G",
-    tuple(["G#"]): "G#", tuple(["A"]): "A", tuple(["A#"]): "A#", tuple(["B"]): "B",
+    "C": "C", "C#": "C#", "D": "D", "D#": "D#",
+    "E": "E", "F": "F", "F#": "F#", "G": "G",
+    "G#": "G#", "A": "A", "A#": "A#", "B": "B",
 
     # メジャー
-    tuple(["C", "E", "G"]): "CM", tuple(["C#", "F", "G#"]): "C#M",
-    tuple(["A", "D", "F#"]): "DM", tuple(["A#", "D#", "G"]): "D#M",
-    tuple(["B", "E", "G#"]): "EM", tuple(["A", "C", "F"]): "FM",
-    tuple(["A#", "C#", "F#"]): "F#M", tuple(["B", "D", "G"]): "GM",
-    tuple(["C", "D#", "G#"]): "G#M", tuple(["A", "C#", "E"]): "AM",
-    tuple(["A#", "D", "F"]): "A#M", tuple(["B", "D#", "F#"]): "BM",
+    "CEG": "CM", "C#FG#": "C#M", "ADF#": "DM",
+    "A#D#G": "D#M", "BEG#": "EM", "ACF": "FM",
+    "A#C#F#": "F#M", "BDG": "GM", "CD#G#": "G#M",
+    "AC#E": "AM", "A#DF": "A#M", "BD#F#": "BM",
 
     # マイナー
-    tuple(["C", "D#", "G"]): "Cm", tuple(["C#", "E", "G#"]): "C#m",
-    tuple(["A", "D", "F"]): "Dm", tuple(["A#", "D#", "F#"]): "D#m",
-    tuple(["B", "E", "G"]): "Em", tuple(["C", "F", "G#"]): "Fm",
-    tuple(["A", "C#", "F#"]): "F#m", tuple(["A#", "D", "G"]): "Gm",
-    tuple(["B", "D#", "G#"]): "G#m", tuple(["A", "C", "E"]): "Am",
-    tuple(["A#", "C#", "F"]): "A#m", tuple(["B", "D", "F#"]): "Bm",
+    "CD#G": "Cm", "C#EG#": "C#m", "ADF": "Dm",
+    "A#D#F#": "D#m", "BEG": "Em", "CFG#": "Fm",
+    "AC#F#": "F#m", "A#DG": "Gm", "BD#G#": "G#m",
+    "ACE": "Am", "A#C#F": "A#m", "BDF#": "Bm",
 
     # セブンス
-    tuple(["A#", "C", "E", "G", ]): "C7", tuple(["B", "C#", "F", "G#"]): "C#7",
-    tuple(["A", "C", "D", "F#"]): "D7", tuple(["A#", "C#", "D#" "G"]): "D#7",
-    tuple(["B", "D", "E", "G#"]): "E7", tuple(["A", "C", "D#", "F"]): "F7",
-    tuple(["A#", "C#", "E", "F#"]): "F#7", tuple(["B", "D", "F", "G"]): "G7",
-    tuple(["C", "D#", "F#", "G#"]): "G#7", tuple(["A", "C#", "E", "G"]): "A7",
-    tuple(["A#", "D", "F", "G#"]): "A#7", tuple(["A", "B", "D#", "F#"]): "B7",
+    "A#CEG": "C7", "BC#FG#": "C#7", "ACDF#": "D7",
+    "A#C#D#" "G": "D#7", "BDEG#": "E7", "ACD#F": "F7",
+    "A#C#EF#": "F#7", "BDFG": "G7", "CD#F#G#": "G#7",
+    "AC#EG": "A7", "A#DFG#": "A#7", "ABD#F#": "B7",
 
     # マイナーセブンス
-    tuple(["A#", "C", "D#", "G"]): "Cm7", tuple(["B", "C#", "E", "G#"]): "C#m7",
-    tuple(["A", "C", "D", "F"]): "Dm7", tuple(["A#", "C#", "D#", "F#"]): "D#m7",
-    tuple(["B", "D", "E", "G"]): "Em7", tuple(["C", "D#", "F", "G#"]): "Fm7",
-    tuple(["A", "C#", "E", "F#"]): "F#m7", tuple(["A#", "D", "F", "G"]): "Gm7",
-    tuple(["B", "D#", "F#", "G#"]): "G#m7", tuple(["A", "C", "E", "G"]): "Am7",
-    tuple(["A#", "C#", "F", "G#"]): "A#m7", tuple(["A", "B", "D", "F#"]): "Bm7",
+    "A#CD#G": "Cm7", "BC#EG#": "C#m7", "ACDF": "Dm7",
+    "A#C#D#F#": "D#m7", "BDEG": "Em7", "CD#FG#": "Fm7",
+    "AC#EF#": "F#m7", "A#DFG": "Gm7", "BD#F#G#": "G#m7",
+    "ACEG": "Am7", "A#C#FG#": "A#m7", "ABDF#": "Bm7",
 
     # ディミニッシュ
-    tuple(["C", "D#", "F#"]): "Cdm", tuple(["C#", "E", "G"]): "C#dm",
-    tuple(["D", "F", "G#"]): "Ddm", tuple(["A", "F#", "D#"]): "D#dm",
-    tuple(["A#", "G", "E"]): "Edm", tuple(["B", "G#", "F"]): "Fdm",
-    tuple(["A", "C", "F#"]): "F#dm", tuple(["A#", "C#", "G"]): "Gdm",
-    tuple(["B", "D", "G#"]): "G#dm", tuple(["A", "C", "D#"]): "Adm",
-    tuple(["A#", "C#", "E"]): "A#dm", tuple(["B", "D", "F"]): "Bdm",
+    "CD#F#": "Cdm", "C#EG": "C#dm", "DFG#": "Ddm",
+    "AF#D#": "D#dm", "A#GE": "Edm", "BG#F": "Fdm",
+    "ACF#": "F#dm", "A#C#G": "Gdm", "BDG#": "G#dm",
+    "ACD#": "Adm", "A#C#E": "A#dm", "BDF": "Bdm",
 }
 
 PITCH = {
@@ -96,7 +86,7 @@ def pitch_to_key(pitch: int) -> str:
     return PITCH[pitch]
 
 
-def key_to_chord(key: list = None):
+def key_to_chord(key: str = None) -> str:
     """キーからコードに変換"""
     try:
         return CHORD[key]
@@ -111,7 +101,7 @@ def pitch_to_chord(pitches: list = None):
         key.append(pitch_to_key(pitch))
     key = list(set(key))
     key.sort()
-    return key_to_chord(tuple(key))
+    return key_to_chord("".join(key))
 
 
 def chord_to_value(key: list = None, stroke: bool = False) -> int:

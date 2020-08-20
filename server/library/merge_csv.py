@@ -17,4 +17,4 @@ for df in df_arrys:
     merged__df = pd.concat([merged__df, df], axis=1)
 
 merged__df.columns = header
-merged__df.to_csv("../data/csv/merged.csv", index=False)
+merged__df.to_csv("../../data/csv/merged.csv", index=False)
