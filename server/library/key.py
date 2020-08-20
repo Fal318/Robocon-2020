@@ -5,19 +5,20 @@ KEYNAME = tuple(["C", "C#", "D", "D#", "E", "F",
                  "F#", "G", "G#", "A", "A#", "B"])
 
 KEY = {
-    "C": 4, "Cm": 16, "C7": 28, "Cm7": 40, "Cdm": 52,
-    "C#": 5, "C#m": 17, "C#7": 29, "C#m7": 41, "C#dm": 53,
-    "D": 6, "Dm": 18, "D7": 30, "Dm7": 42, "Ddm": 54,
-    "D#": 7, "D#m": 19, "D#7": 31, "D#m7": 43, "D#dm": 55,
-    "E": 8, "Em": 20, "E7": 32, "Em7": 44, "Edm": 56,
-    "F": 9, "Fm": 21, "F7": 33, "Fm7": 45, "Fdm": 57,
-    "F#": 10, "F#m": 22, "F#7": 34, "F#m7": 46, "F#dm": 58,
-    "G": 11, "Gm": 23, "G7": 35, "Gm7": 47, "Gdm": 59,
-    "G#": 12, "G#m": 24, "G#7": 36, "G#m7": 48, "G#dm": 60,
-    "A": 13, "Am": 25, "A7": 37, "Am7": 49, "Adm": 61,
-    "A#": 14, "A#m": 26, "A#7": 38, "A#m7": 50, "A#dm": 62,
-    "B": 15, "Bm": 27, "B7": 39, "Bm7": 51, "Bdm": 63,
-
+    "CM": 4, "Cm": 16, "C7": 28, "Cm7": 40, "Cdm": 52,
+    "C#M": 5, "C#m": 17, "C#7": 29, "C#m7": 41, "C#dm": 53,
+    "DM": 6, "Dm": 18, "D7": 30, "Dm7": 42, "Ddm": 54,
+    "D#M": 7, "D#m": 19, "D#7": 31, "D#m7": 43, "D#dm": 55,
+    "EM": 8, "Em": 20, "E7": 32, "Em7": 44, "Edm": 56,
+    "FM": 9, "Fm": 21, "F7": 33, "Fm7": 45, "Fdm": 57,
+    "F#M": 10, "F#m": 22, "F#7": 34, "F#m7": 46, "F#dm": 58,
+    "GM": 11, "Gm": 23, "G7": 35, "Gm7": 47, "Gdm": 59,
+    "G#M": 12, "G#m": 24, "G#7": 36, "G#m7": 48, "G#dm": 60,
+    "AM": 13, "Am": 25, "A7": 37, "Am7": 49, "Adm": 61,
+    "A#M": 14, "A#m": 26, "A#7": 38, "A#m7": 50, "A#dm": 62,
+    "BM": 15, "Bm": 27, "B7": 39, "Bm7": 51, "Bdm": 63,
+    "C": 64, "C#": 65, "D": 66, "D#": 67, "E": 68, "F": 69,
+    "F#": 70, "G": 71, "G#": 72, "A": 73, "A#": 74, "B": 75
 }
 
 CHORD = {
@@ -104,15 +105,15 @@ def pitch_to_chord(pitches: list = None):
     return key_to_chord("".join(key))
 
 
-def chord_to_value(key: list = None, stroke: bool = False) -> int:
+def chord_to_value(key: str = None, stroke: bool = False) -> int:
     """コードに対応させてある値を返す"""
     chord = key_to_chord(key)
     if chord == 0:
         return 1
     if stroke:
-        return chord + 3
-    return chord + 1
+        return KEY[chord] + 3
+    return KEY[chord] + 1
 
 
 if __name__ == "__main__":
-    pass
+    print(chord_to_value("C"))
