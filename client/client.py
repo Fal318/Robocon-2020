@@ -15,7 +15,7 @@ try:
     client_socket, address = server_socket.accept()
     print("Connect")
     while True:
-        rcv = int.from_bytes(client_socket.recv(64), "little")
+        rcv = int.from_bytes(client_socket.recv(1024), "little")
         recv_data.append([time.time(), rcv])
         print(f"recv:{rcv}")
         if rcv == 0:

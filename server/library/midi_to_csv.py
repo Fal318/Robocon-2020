@@ -1,10 +1,21 @@
 # -*- coding: utf-8 -*-
 """MIDIを楽器ごとのCSVに変換する"""
+import math
 import pandas as pd
 import pretty_midi
 import key
 
-SONG_TIME: int = 2550
+
+def get_longs(midi_data: pretty_midi.PrettyMIDI) -> int:
+    """曲の長さを返す"""
+    songs_long = 0
+    for instrument in midi_data.instruments:
+        for note in instrument.notes:
+            end = note.end
+            if end > songs_long:
+                songs_long = end
+    songs_long = int(math.ceil(songs_long))*10
+    return songs_long
 
 
 def ins_to_list(ins: pretty_midi.containers.Note):
@@ -14,13 +25,15 @@ def ins_to_list(ins: pretty_midi.containers.Note):
 
 def writer_csv(arrs: list, ins_num: int):
     """データフレームをCSVに書き出し"""
-    pd.Series(arrs).to_csv(
-        f"../../data/csv/data_{ins_num}.csv", header=False, index=False)
+    used_num = [33, 113, 116, 122]
+    if ins_num in used_num:
+        pd.Series(arrs).to_csv(
+            f"../../data/csv/data_{ins_num}.csv", header=False, index=False)
 
 
-def fix_arrays(arrs: list):
+def fix_arrays(arrs: list, long):
     """配列を使いやすい形に変換"""
-    fixed_arrays = [None for _ in range(SONG_TIME)]
+    fixed_arrays = ["" for _ in range(long)]
     arrs.sort(key=lambda x: x[0][0])
     while len(arrs) > 0:
         arr = arrs.pop(0)
@@ -32,9 +45,9 @@ def fix_arrays(arrs: list):
 
 def main(ins_num):
     """メイン"""
-    midi_data = None
     inotes, chords = [], []
     midi_data = pretty_midi.PrettyMIDI("../../data/midi/robocon.mid")
+    song_long = get_longs(midi_data)
     for instrument in midi_data.instruments:
         if instrument.program == ins_num:
             inote = instrument.notes
@@ -47,7 +60,6 @@ def main(ins_num):
     index = 0
     while index < len(inotes)-1:
         pitches = [inotes[index][2]]
-
         while index < len(inotes)-1:
             if inotes[index][0] == inotes[index+1][0]:
                 if inotes[index][1] == inotes[index+1][1]:
@@ -63,13 +75,13 @@ def main(ins_num):
         stop = inotes[index][1]*10
         chords.append([[start, stop], key.pitch_to_chord(pitches)])
     if len(chords) == 0:
-        return None
-    return chords
+        return [None, None]
+    return [chords, song_long]
 
 
 if __name__ == '__main__':
     for i in range(129):
-        chord = main(i)
+        chord, long = main(i)
         if chord is not None:
-            farry = fix_arrays(chord)
+            farry = fix_arrays(chord, long)
             writer_csv(farry, i)
