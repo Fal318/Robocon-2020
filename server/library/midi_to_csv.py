@@ -54,8 +54,6 @@ def main(ins_num):
             for ins in inote:
                 if not isinstance(type(ins), list):
                     inotes.append(ins_to_list(ins))
-                else:
-                    continue
 
     index = 0
     while index < len(inotes)-1:

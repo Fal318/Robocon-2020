@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
 """key.py"""
 
+# KEYNAME:キーの名前
 KEYNAME = tuple(["C", "C#", "D", "D#", "E", "F",
                  "F#", "G", "G#", "A", "A#", "B"])
-
+# KEY:キーと送信用に決めた値の対応付け
 KEY = {
-    "CM": 4, "Cm": 16, "C7": 28, "Cm7": 40, "Cdm": 52,
-    "C#M": 5, "C#m": 17, "C#7": 29, "C#m7": 41, "C#dm": 53,
-    "DM": 6, "Dm": 18, "D7": 30, "Dm7": 42, "Ddm": 54,
-    "D#M": 7, "D#m": 19, "D#7": 31, "D#m7": 43, "D#dm": 55,
-    "EM": 8, "Em": 20, "E7": 32, "Em7": 44, "Edm": 56,
-    "FM": 9, "Fm": 21, "F7": 33, "Fm7": 45, "Fdm": 57,
-    "F#M": 10, "F#m": 22, "F#7": 34, "F#m7": 46, "F#dm": 58,
-    "GM": 11, "Gm": 23, "G7": 35, "Gm7": 47, "Gdm": 59,
-    "G#M": 12, "G#m": 24, "G#7": 36, "G#m7": 48, "G#dm": 60,
-    "AM": 13, "Am": 25, "A7": 37, "Am7": 49, "Adm": 61,
-    "A#M": 14, "A#m": 26, "A#7": 38, "A#m7": 50, "A#dm": 62,
-    "BM": 15, "Bm": 27, "B7": 39, "Bm7": 51, "Bdm": 63,
-    "C": 64, "C#": 65, "D": 66, "D#": 67, "E": 68, "F": 69,
-    "F#": 70, "G": 71, "G#": 72, "A": 73, "A#": 74, "B": 75
+    "C": 4, "Cm": 16, "C7": 28, "Cm7": 40, "Cdm": 52,
+    "C#": 5, "C#m": 17, "C#7": 29, "C#m7": 41, "C#dm": 53,
+    "D": 6, "Dm": 18, "D7": 30, "Dm7": 42, "Ddm": 54,
+    "D#": 7, "D#m": 19, "D#7": 31, "D#m7": 43, "D#dm": 55,
+    "E": 8, "Em": 20, "E7": 32, "Em7": 44, "Edm": 56,
+    "F": 9, "Fm": 21, "F7": 33, "Fm7": 45, "Fdm": 57,
+    "F#": 10, "F#m": 22, "F#7": 34, "F#m7": 46, "F#dm": 58,
+    "G": 11, "Gm": 23, "G7": 35, "Gm7": 47, "Gdm": 59,
+    "G#": 12, "G#m": 24, "G#7": 36, "G#m7": 48, "G#dm": 60,
+    "A": 13, "Am": 25, "A7": 37, "Am7": 49, "Adm": 61,
+    "A#": 14, "A#m": 26, "A#7": 38, "A#m7": 50, "A#dm": 62,
+    "B": 15, "Bm": 27, "B7": 39, "Bm7": 51, "Bdm": 63,
 }
-
+# CHORD:キーとコードの対応付け
 CHORD = {
     # 単音
     "C": "C", "C#": "C#", "D": "D", "D#": "D#",
@@ -57,7 +56,7 @@ CHORD = {
     "ACF#": "F#dm", "A#C#G": "Gdm", "BDG#": "G#dm",
     "ACD#": "Adm", "A#C#E": "A#dm", "BDF": "Bdm",
 }
-
+# PITCH: ピッチ(MIDIの内部表現)とキーの名前の対応付け
 PITCH = {
     0: "C", 1: "C#", 2: "D", 3: "D#", 4: "E", 5: "F", 6: "F#", 7: "G",
     8: "G#", 9: "A", 10: "A#", 11: "B", 12: "C", 13: "C#", 14: "D",
@@ -78,7 +77,6 @@ PITCH = {
     111: "D#", 112: "E", 113: "F", 114: "F#", 115: "G", 116: "G#",
     117: "A", 118: "A#", 119: "B", 120: "C", 121: "C#", 122: "D",
     123: "D#", 124: "E", 125: "F", 126: "F#", 127: "G",
-
 }
 
 
@@ -105,15 +103,15 @@ def pitch_to_chord(pitches: list = None):
     return key_to_chord("".join(key))
 
 
-def chord_to_value(key: str = None, stroke: bool = False) -> int:
+def chord_to_value(key: list = None, stroke: bool = False) -> int:
     """コードに対応させてある値を返す"""
     chord = key_to_chord(key)
     if chord == 0:
         return 1
     if stroke:
-        return KEY[chord] + 3
-    return KEY[chord] + 1
+        return chord + 3
+    return chord + 1
 
 
 if __name__ == "__main__":
-    print(chord_to_value("C"))
+    pass

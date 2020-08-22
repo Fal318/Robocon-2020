@@ -2,9 +2,8 @@
 """楽器ごとに分かれたCSVを一つにまとめる"""
 import pandas as pd
 
-df_arrys = []
-header = []
-for i in range(0, 129):
+df_arrys, header = [], []
+for i in range(129):
     try:
         df = pd.read_csv(f"../../data/csv/data_{i}.csv")
     except FileNotFoundError:

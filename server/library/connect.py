@@ -74,13 +74,13 @@ class Connect:
         self.__sock = value
 
     def reconnect(self, addr: str, num: int):
-        """reconnect"""
+        """再接続"""
         self.__bdaddr = addr
         self.__port = num
         self.__sock = bt.BluetoothSocket(bt.RFCOMM)
 
     def connectbluetooth(self, bdaddr: str, port: int) -> bool:
-        """connect"""
+        """接続"""
         for _ in range(4):
             try:
                 if isinstance(self.__sock, bt.BluetoothSocket):
@@ -96,5 +96,5 @@ class Connect:
         return False
 
     def disconnect(self):
-        """disconnect"""
+        """切断"""
         self.__sock.close()

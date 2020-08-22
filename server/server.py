@@ -15,7 +15,6 @@ TARGET:接続する台数
 PERIOD:実行周期(sec)
 """
 
-
 csv_data = pd.read_csv("../data/csv/merged.csv", header=0)
 
 
@@ -43,6 +42,7 @@ def csv_to_senddata(id_num: int) -> list:
                     ret_arr[0][j] += 2**i
         return ret_arr
     return None
+
 
 class Connection:
     """通信を定周期で行うためのクラス"""
@@ -104,11 +104,11 @@ class Connection:
         self.ras.disconnect()
 
 
-def main():
+def main() -> int:
     """メイン"""
     if len(ad.CLIENT) < TARGET:
         print("len(address) < TARGET")
-        return
+        return 1
     rass, threads = [], []
     for i in range(TARGET):
         ras = Connection(i)
@@ -123,6 +123,7 @@ def main():
 
     for ras in rass:
         del ras
+    return 0
 
 
 if __name__ == "__main__":
