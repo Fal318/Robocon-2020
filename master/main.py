@@ -8,12 +8,6 @@ import address as ad
 from library import key
 from library import connect
 
-TARGET: int = 2
-PERIOD: float = 0.1
-"""
-TARGET:接続する台数
-PERIOD:実行周期(sec)
-"""
 
 csv_data = pd.read_csv("../data/csv/merged.csv", header=0)
 
@@ -83,12 +77,12 @@ class Connection:
             self.ras.sock.recv(1024), "little"))
         print("host:{0} recv:{1}".format(self.proc_id, self.rcv_data[-1]))
 
-    def main_process(self):
+    def main_process(self, period: int):
         """メインプロセス"""
         try:
             for send in self.sending_data[0]:
                 self.sender(send)
-                time.sleep(PERIOD - (time.time() - self.sendtime))
+                time.sleep(period - (time.time() - self.sendtime))
         except KeyboardInterrupt:
             self.sender(0)
             print("Connection Killed")
@@ -106,6 +100,8 @@ class Connection:
 
 def main() -> int:
     """メイン"""
+    TARGET: int = 2 # 接続する台数
+    PERIOD: float = 0.1 # 実行周期(sec)
     if len(ad.CLIENT) < TARGET:
         print("len(address) < TARGET")
         return 1
@@ -115,7 +111,7 @@ def main() -> int:
         if ras.is_aivable():
             rass.append(ras)
             thread = threading.Thread(
-                target=ras.main_process)
+                target=ras.main_process, args=([PERIOD]))
             threads.append(thread)
 
     for thread in threads:

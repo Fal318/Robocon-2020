@@ -98,3 +98,7 @@ class Connect:
     def disconnect(self):
         """切断"""
         self.__sock.close()
+
+
+if __name__ == '__main__':
+    pass
