@@ -1,3 +1,3 @@
 #!/bin/bash
-cd ../../server/
-python3 server.py
+cd ../../master/
+python3 main.py
