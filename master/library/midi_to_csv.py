@@ -7,7 +7,7 @@ import key
 
 
 def get_longs(midi_data: pretty_midi.PrettyMIDI) -> int:
-    """曲の長さを返す"""
+    """曲の長さ(ms)を返す"""
     songs_long = 0
     for instrument in midi_data.instruments:
         for note in instrument.notes:
@@ -18,7 +18,7 @@ def get_longs(midi_data: pretty_midi.PrettyMIDI) -> int:
     return songs_long
 
 
-def ins_to_list(ins: pretty_midi.containers.Note):
+def ins_to_list(ins: pretty_midi.containers.Note) -> list:
     """MIDIデータ(ノート)から必要なものだけ取り出す"""
     return [ins.start, ins.end, ins.pitch, ins.velocity]
 
@@ -31,7 +31,7 @@ def writer_csv(arrs: list, ins_num: int):
             f"../../data/csv/data_{ins_num}.csv", header=False, index=False)
 
 
-def fix_arrays(arrs: list, long):
+def fix_arrays(arrs: list, long) -> list:
     """配列を使いやすい形に変換"""
     fixed_arrays = ["" for _ in range(long)]
     arrs.sort(key=lambda x: x[0][0])
@@ -43,7 +43,7 @@ def fix_arrays(arrs: list, long):
     return fixed_arrays
 
 
-def main(ins_num):
+def main(ins_num) -> list:
     """メイン"""
     inotes, chords = [], []
     midi_data = pretty_midi.PrettyMIDI("../../data/midi/robocon.mid")

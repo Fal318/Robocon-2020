@@ -95,7 +95,7 @@ def key_to_chord(key: str = None) -> str:
         return key
 
 
-def pitch_to_chord(pitches: list = None):
+def pitch_to_chord(pitches: list = None) -> str:
     """ピッチからコードに変換"""
     key = []
     for pitch in pitches:
@@ -106,7 +106,10 @@ def pitch_to_chord(pitches: list = None):
 
 
 def chord_to_value(key: str = None, stroke: bool = False) -> int:
-    """コードに対応させてある値を返す"""
+    """
+    コードに対応させてある値を返す
+    最後に1を足しているのはLSBの調整用
+    """
     chord = key_to_chord(key)
     if chord == 0:
         return 1

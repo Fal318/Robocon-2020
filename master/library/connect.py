@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """BT通信ライブラリ"""
-from time import sleep
+import time
 import bluetooth as bt
 
 
@@ -49,7 +49,7 @@ class Connect:
         return
 
     @port.getter
-    def port(self):
+    def port(self) -> int:
         """getter"""
         return self.__port
 
@@ -85,10 +85,10 @@ class Connect:
             try:
                 if isinstance(self.__sock, bt.BluetoothSocket):
                     self.__sock.connect((bdaddr, port))
-                    sleep(1)
+                    time.sleep(1)
             except bt.BluetoothError:
                 self.reconnect(bdaddr, port)
-                sleep(0.25)
+                time.sleep(0.25)
             except KeyboardInterrupt:
                 break
             else:

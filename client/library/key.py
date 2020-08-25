@@ -96,7 +96,7 @@ def key_to_chord(key: str = None) -> str:
         return key
 
 
-def pitch_to_chord(pitches: list = None):
+def pitch_to_chord(pitches: list = None) -> str:
     """ピッチからコードに変換"""
     key = []
     for pitch in pitches:
