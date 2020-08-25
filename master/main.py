@@ -12,6 +12,13 @@ from library import connect
 csv_data = pd.read_csv("../data/csv/merged.csv", header=0)
 
 
+"""
+id:
+    0:ウクレレ
+    1:パーカッション
+"""
+
+
 def csv_to_senddata(id_num: int) -> list:
     """CSVから送信用データに変換する"""
     program_nums: list = None
@@ -100,8 +107,8 @@ class Connection:
 
 def main() -> int:
     """メイン"""
-    TARGET: int = 2 # 接続する台数
-    PERIOD: float = 0.1 # 実行周期(sec)
+    TARGET: int = 2  # 接続する台数
+    PERIOD: float = 0.1  # 実行周期(sec)
     if len(ad.CLIENT) < TARGET:
         print("len(address) < TARGET")
         return 1

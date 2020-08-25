@@ -4,6 +4,7 @@
 KEYNAME = tuple(["C", "C#", "D", "D#", "E", "F",
                  "F#", "G", "G#", "A", "A#", "B"])
 
+
 KEY = {
     "CM": 4, "Cm": 16, "C7": 28, "Cm7": 40, "Cdm": 52,
     "C#M": 5, "C#m": 17, "C#7": 29, "C#m7": 41, "C#dm": 53,
@@ -106,7 +107,10 @@ def pitch_to_chord(pitches: list = None):
 
 
 def chord_to_value(key: str = None, stroke: bool = False) -> int:
-    """コードに対応させてある値を返す"""
+    """
+    コードに対応させてある値を返す
+    最後に1を足しているのはLSBの調整用
+    """
     chord = key_to_chord(key)
     if chord == 0:
         return 1
