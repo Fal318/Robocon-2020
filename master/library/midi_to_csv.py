@@ -31,9 +31,9 @@ def writer_csv(arrs: list, ins_num: int):
             f"../../data/csv/data_{ins_num}.csv", header=False, index=False)
 
 
-def fix_arrays(arrs: list, long) -> list:
+def fix_arrays(arrs: list, time_length: int) -> list:
     """配列を使いやすい形に変換"""
-    fixed_arrays = ["" for _ in range(long)]
+    fixed_arrays = ["" for _ in range(time_length)]
     arrs.sort(key=lambda x: x[0][0])
     while len(arrs) > 0:
         arr = arrs.pop(0)

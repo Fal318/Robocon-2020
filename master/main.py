@@ -12,7 +12,12 @@ from library import connect
 csv_data = pd.read_csv("../data/csv/merged.csv", header=0)
 
 
+TARGET: int = 2
+PERIOD: float = 0.1
+
 """
+TARGET:接続する台数
+PERIOD:実行周期(sec)
 id:
     0:ウクレレ
     1:パーカッション
@@ -107,8 +112,6 @@ class Connection:
 
 def main() -> int:
     """メイン"""
-    TARGET: int = 2  # 接続する台数
-    PERIOD: float = 0.1  # 実行周期(sec)
     if len(ad.CLIENT) < TARGET:
         print("len(address) < TARGET")
         return 1

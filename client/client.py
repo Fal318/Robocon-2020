@@ -5,13 +5,12 @@ import bluetooth as bt
 
 def main():
     """main"""
-    PORT = 1
     server_socket = bt.BluetoothSocket(bt.RFCOMM)
 
     try:
-        server_socket.bind(("", PORT))
+        server_socket.bind(("", 1))
         server_socket.listen(1)
-        client_socket, address = server_socket.accept()
+        client_socket = server_socket.accept()[0]
         print("Connect")
         rcv = None
         while rcv != 0:
