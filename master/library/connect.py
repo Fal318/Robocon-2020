@@ -7,11 +7,12 @@ import bluetooth as bt
 class Connect:
     """BT"""
 
-    def __init__(self, name: str, addr: str, port: int):
+    def __init__(self, name: str, addr: str, port: int, is_debug: bool = False):
         self.__name = name
         self.__bdaddr = addr
         self.__port = port
         self.__sock = bt.BluetoothSocket(bt.RFCOMM)
+        self.is_debug = is_debug
 
     @property
     def name(self):
@@ -81,19 +82,34 @@ class Connect:
 
     def connectbluetooth(self, bdaddr: str, port: int) -> bool:
         """接続"""
-        for _ in range(4):
-            try:
-                if isinstance(self.__sock, bt.BluetoothSocket):
-                    self.__sock.connect((bdaddr, port))
-                    time.sleep(1)
-            except bt.BluetoothError:
-                self.reconnect(bdaddr, port)
-                time.sleep(0.25)
-            except KeyboardInterrupt:
-                break
-            else:
-                return True
-        return False
+        if self.is_debug:
+            for _ in range(4):
+                try:
+                    if isinstance(self.__sock, bt.BluetoothSocket):
+                        self.__sock.connect((bdaddr, port))
+                        time.sleep(1)
+                except bt.BluetoothError:
+                    self.reconnect(bdaddr, port)
+                    time.sleep(0.25)
+                except KeyboardInterrupt:
+                    break
+                else:
+                    return True
+            return False
+        else:
+            while True:
+                try:
+                    if isinstance(self.__sock, bt.BluetoothSocket):
+                        self.__sock.connect((bdaddr, port))
+                        time.sleep(1)
+                except bt.BluetoothError:
+                    self.reconnect(bdaddr, port)
+                    time.sleep(0.25)
+                except KeyboardInterrupt:
+                    break
+                else:
+                    return True
+            return False
 
     def disconnect(self):
         """切断"""

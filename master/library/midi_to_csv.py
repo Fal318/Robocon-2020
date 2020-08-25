@@ -4,6 +4,7 @@ import math
 import pandas as pd
 import pretty_midi
 import key
+import program_number
 
 
 def get_longs(midi_data: pretty_midi.PrettyMIDI) -> int:
@@ -25,7 +26,7 @@ def ins_to_list(ins: pretty_midi.containers.Note) -> list:
 
 def writer_csv(arrs: list, ins_num: int):
     """データフレームをCSVに書き出し"""
-    used_num = [33, 113, 116, 122]
+    used_num = program_number.USED_NUM
     if ins_num in used_num:
         pd.Series(arrs).to_csv(
             f"../../data/csv/data_{ins_num}.csv", header=False, index=False)

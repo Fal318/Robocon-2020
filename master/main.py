@@ -1,5 +1,6 @@
 """送信側のプログラム"""
 # -*- coding: utf-8 -*-
+import sys
 import time
 import threading
 import pandas as pd
@@ -7,9 +8,15 @@ import bluetooth as bt
 import address as ad
 from library import key
 from library import connect
-
+from library import program_number
 
 csv_data = pd.read_csv("../data/csv/merged.csv", header=0)
+
+
+args = sys.argv
+is_debug = False
+if len(args) > 1 and args[1] == "-d":
+    is_debug = True
 
 
 TARGET: int = 2
@@ -28,9 +35,9 @@ def csv_to_senddata(id_num: int) -> list:
     """CSVから送信用データに変換する"""
     program_nums: list = None
     if id_num == 0:
-        program_nums = [33]
+        program_nums = program_number.UKULELE
     if id_num == 1:
-        program_nums = [113, 116, 122]
+        program_nums = program_number.PERCUSSION
     if program_nums is None:
         return None
     arrs = [[] for _ in range(len(program_nums))]
@@ -62,7 +69,7 @@ class Connection:
         try:
             # 通信用のインスタンスを生成
             self.ras = connect.Connect("ras{0}".format(
-                self.proc_id), ad.CLIENT[proc_id], 1)
+                self.proc_id), ad.CLIENT[proc_id], 1, is_debug)
 
             if self.ras.connectbluetooth(self.ras.bdaddr, self.ras.port):
                 self.aivable = True
