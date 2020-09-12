@@ -1,5 +1,5 @@
-"""送信側のプログラム"""
 # -*- coding: utf-8 -*-
+"""送信側のプログラム"""
 import sys
 import time
 import threading
@@ -7,7 +7,7 @@ import pandas as pd
 import bluetooth as bt
 import address as ad
 from library import key
-from library import connect
+from library import bt_connect
 from library import program_number
 
 csv_data = pd.read_csv("../data/csv/merged.csv", header=0)
@@ -20,7 +20,7 @@ if len(args) > 1 and args[1] == "-d":
 
 
 TARGET: int = 2
-PERIOD: float = 0.1
+PERIOD: float = 0.09
 
 """
 TARGET:接続する台数
@@ -68,7 +68,7 @@ class Connection:
 
         try:
             # 通信用のインスタンスを生成
-            self.ras = connect.Connect("ras{0}".format(
+            self.ras = bt_connect.Connect("ras{0}".format(
                 self.proc_id), ad.CLIENT[proc_id], 1, is_debug)
 
             if self.ras.connectbluetooth(self.ras.bdaddr, self.ras.port):
