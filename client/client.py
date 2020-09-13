@@ -3,7 +3,7 @@
 import csv
 import time
 import bluetooth as bt
-import serial_connect
+from library import serial_connect
 
 
 def main():
