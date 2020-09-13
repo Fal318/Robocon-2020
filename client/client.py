@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""クライアント側の代用プログラム"""
-import csv
-import time
+"""クライアント側"""
 import bluetooth as bt
 from library import serial_connect
 
