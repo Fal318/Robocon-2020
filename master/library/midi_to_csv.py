@@ -84,5 +84,3 @@ if __name__ == '__main__':
         if chord is not None:
             farry = fix_arrays(chord, long)
             writer_csv(farry, i)
-
-寝
