@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """複数台での通信の誤差修正"""
+import operator
 
 
 class Data:
@@ -33,27 +34,27 @@ class Data:
 class FixLag:
     """通信のラグを修正"""
 
-    def __init__(self, max_length: int):
+    def __init__(self):
         self.__lag = 0
-        self.__data = [Data(max_length) for _ in range(2)]
+        self.__data = [Data(20) for _ in range(2)]
 
     def add(self, index: int, data: float):
         """要素の追加"""
         if index >= 2:
-            raise IndexError("Id out of range")
-        self.__data[index].add_data(data)
+            raise ValueError("Id out of range")
+        self.__data[index] = data.add_data(data)
 
     def __call(self) -> float:
         """平均誤差の計算"""
-        return sum([d.array_mean() for d in self.__data]) / 2
+        return sum(list(map(operator.mul,
+                            [d.array_mean() for d in self.__data], [1, -1])))
 
-    def fix(self) -> list:
+    def get_lag(self, index: int) -> list:
         """誤差を返す"""
-        self.__lag = self.__call() / 2
-        if self.__lag >= 0:
-            return [-self.__lag, self.__lag]
-
-        return [self.__lag, -self.__lag]
+        if index >= 2:
+            raise ValueError("Id out of range")
+        self.__lag = self.__call() / 2  # 2台での通信なので割る2
+        return -self.__lag * (-1) ** index
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """クライアント側"""
+import time
 import bluetooth as bt
 from library import serial_connect
 
@@ -16,6 +17,7 @@ def main():
         print("Connect")
         while True:
             rcv = int.from_bytes(client_socket.recv(64), "little")
+            server_socket.send(int(time.time()*10000000))
             maicon.write(rcv)
             print(f"recv:{rcv}")
             if rcv == 0:
