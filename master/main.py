@@ -21,9 +21,6 @@ LONG: int = 1000
 """
 TARGET:接続する台数
 PERIOD:実行周期(sec)
-id:
-    0:ウクレレ
-    1:パーカッション
 """
 
 fix_lag = fix_lag.FixLag()
@@ -57,7 +54,7 @@ class Connection:
         """プロセスが有効かどうかを返す"""
         return self.__aivable
 
-    def send(self, data: int):
+    def __send(self, data: int):
         """データ(整数値)を送信する"""
         self.__sendtime = time.time()
         self.__ras.sock.send((data).to_bytes(1, "little"))
@@ -65,25 +62,26 @@ class Connection:
 
     def read(self):
         """データの受信"""
-        fix_lag.add(self.__proc_id, int.from_bytes(
-            self.__ras.sock.recv(64), "little")/10000000)
+        while not self.__ended:
+            fix_lag.add(self.__proc_id, int.from_bytes(
+                self.__ras.sock.recv(64), "little")/10000000)
 
     def main_process(self, period: int):
         """メインプロセス"""
         try:
             for send in self.__send_data[0]:
-                self.send(send)
+                self.__send(send)
                 time.sleep(period - (time.time() - self.__sendtime)+self.__lag)
         except KeyboardInterrupt:
-            self.send(0)
+            self.__send(-1)
             print("Connection Killed")
         except ValueError:
-            self.send(0)
+            self.__send(-1)
             print("周期が早すぎます")
         except bt.BluetoothError:
             print("Connection Killed")
         else:
-            self.send(0)
+            self.__send(-1)
         finally:
             self.__ended = True
 
@@ -101,24 +99,21 @@ class Connection:
 def main():
     """メイン"""
     if len(ad.CLIENT) < TARGET:
-        print("len(address) < TARGET")
-        raise ValueError()
-    rass, threads = [], []
+        raise ValueError("len(address) < TARGET")
+    ras_arr, threads = [], []
     for i in range(TARGET):
         ras = Connection(i)
         if ras.is_aivable():
-            rass.append(ras)
-            thread = threading.Thread(
-                target=ras.main_process, args=([PERIOD]))
-            threads.append(thread)
-    for ras in rass:
-        thread = threading.Thread(target=ras.change_lag)
-        threads.append(thread)
+            ras_arr.append(ras)
+            threads.append(threading.Thread(
+                target=ras.main_process, args=([PERIOD])))
+            threads.append(threading.Thread(target=ras.read))
+            threads.append(threading.Thread(target=ras.change_lag))
 
     for thread in threads:
         thread.start()
 
-    for ras in rass:
+    for ras in ras_arr:
         del ras
 
 
