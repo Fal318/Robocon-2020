@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """送信側のプログラム"""
 import sys
-import time
 import threading
 import bluetooth as bt
 import address as ad
