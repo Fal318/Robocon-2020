@@ -16,7 +16,7 @@ if len(args) > 1 and args[1] == "-d":
 
 TARGET: int = 2  # TARGET:接続する台数
 
-timestamp = ts.Timestamp()
+timestamp = ts.Timestamp(TARGET)
 
 
 class Connection:
