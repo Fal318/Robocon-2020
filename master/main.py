@@ -36,9 +36,9 @@ class Connection:
         """プロセスが有効かどうかを返す"""
         return self.__aivable
 
-    def __send(self, data: int):
+    def __send(self, data: int, size:int):
         """データ(整数値)を送信する"""
-        self.__ras.sock.send((data).to_bytes(1, "little"))
+        self.__ras.sock.send((data).to_bytes(size, "little"))
         print("target={0} send:{1}".format(self.__proc_id, data))
 
     def __read(self):
@@ -53,17 +53,17 @@ class Connection:
             timestamp.change_aivable(self.__proc_id)
             while not timestamp.get_timestamp():
                 continue
-            self.__send(timestamp.get_timestamp())
+            self.__send(timestamp.get_timestamp(), 64)
         except KeyboardInterrupt:
-            self.__send(-1)
+            self.__send(0, 1)
             print("Connection Killed")
         except ValueError:
-            self.__send(-1)
+            self.__send(-1, 1)
             print("周期が早すぎます")
         except bt.BluetoothError:
             print("Connection Killed")
         else:
-            self.__send(-1)
+            self.__send(0, 1)
 
     def __del__(self):
         self.__ras.disconnect()
