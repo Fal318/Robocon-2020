@@ -44,6 +44,7 @@ def main():
         print("Connect")
         client_socket.send((1).to_bytes(1, "little"))
         start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
+        print(start_time)
         if start_time < 0:
             raise Exception("Failed")
         if start_time-time.time() > 0.2:
@@ -60,9 +61,6 @@ def main():
     except KeyboardInterrupt:
         print("Connection Killed")
     else:
-        server_socket.send((1).to_bytes(1, "little"))
-        start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
-        print(start_time)
         print("Connection Ended")
     finally:
         del maicon
