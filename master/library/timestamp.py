@@ -1,6 +1,6 @@
 import time
 
-
+timestamp = 0
 class Timestamp:
     def __init__(self, length: int):
         self.__length = length
@@ -13,9 +13,10 @@ class Timestamp:
         self.__aivable[index] = True
 
     def get_timestamp(self) -> int:
-        if not False in self.__aivable:
-            self.ts = int((time.time()+2)*10000000)
-        return self.ts
+        if not timestamp:
+            if not False in self.__aivable:
+                timestamp = int((time.time()+2)*10000000)
+        return timestamp
 
 
 if __name__ == "__main__":

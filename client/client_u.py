@@ -54,11 +54,10 @@ def main():
             time.sleep(time.time()-send_time-PERIOD)
     except KeyboardInterrupt:
         print("Connection Killed")
-    except serial.SerialException:
+    else:
         server_socket.send((1).to_bytes(1, "little"))
         start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
         print(start_time)
-    else:
         print("Connection Ended")
     finally:
         del maicon
