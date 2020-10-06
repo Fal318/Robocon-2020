@@ -51,6 +51,7 @@ def main():
             time.sleep(start_time-time.time()-0.2)
         while start_time - time.time() > 0:
             time.sleep(0.001)
+        print(time.time())
 
         for send_data, bpm in zip(*generated_data):
             send_time = time.time()

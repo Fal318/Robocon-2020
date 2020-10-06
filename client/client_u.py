@@ -46,7 +46,7 @@ def main():
             time.sleep(start_time-time.time()-0.2)
         while start_time - time.time() > 0:
             time.sleep(0.001)
-
+        print(time.time())
         for sd in send_data:
             send_time = time.time()
             time.sleep(LAG)
