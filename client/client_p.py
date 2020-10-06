@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """パーカッション"""
 import time
+import serial
 import pandas as pd
 import bluetooth as bt
 from library import head, serial_connect
@@ -31,7 +32,8 @@ def get_period(bpm) -> float:
 
 def main():
     """main"""
-    generated_data = generate_send_data("../data/data.csv")
+    # generated_data = generate_send_data("../data/data.csv")
+    generated_data = []
     server_socket = bt.BluetoothSocket(bt.RFCOMM)
     maicon = None
     try:
@@ -57,6 +59,10 @@ def main():
             time.sleep(time.time()-send_time-get_period(bpm))
     except KeyboardInterrupt:
         print("Connection Killed")
+    except serial.SerialException:
+        server_socket.send(1)
+        start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
+
     else:
         print("Connection Ended")
     finally:

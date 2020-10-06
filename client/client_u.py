@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ウクレレ"""
 import time
+import serial
 import pandas as pd
 import bluetooth as bt
 from library import head, serial_connect
@@ -52,6 +53,10 @@ def main():
             time.sleep(time.time()-send_time-PERIOD)
     except KeyboardInterrupt:
         print("Connection Killed")
+    except serial.SerialException:
+        server_socket.send(1)
+        start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
+
     else:
         print("Connection Ended")
     finally:
