@@ -57,7 +57,6 @@ def main():
     except serial.SerialException:
         server_socket.send(1)
         start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
-
     else:
         print("Connection Ended")
     finally:
