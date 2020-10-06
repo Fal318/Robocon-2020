@@ -42,7 +42,7 @@ def main():
         client_socket = server_socket.accept()[0]
         maicon = serial_connect.Serial_Connection("/dev/mbed", 115200)
         print("Connect")
-        server_socket.send((1).to_bytes(1, "little"))
+        client_socket.send((1).to_bytes(1, "little"))
         start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
         if start_time < 0:
             raise Exception("Failed")

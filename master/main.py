@@ -61,7 +61,7 @@ class Connection:
             self.__send(-1)
             print("周期が早すぎます")
         except bt.BluetoothError:
-            print("Connection Kt illed")
+            print("Connection Killed")
         else:
             self.__send(-1)
 
