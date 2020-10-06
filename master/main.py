@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
-"""送信側のプログラム"""
-import sys
+"""PC側"""
 import threading
 import bluetooth as bt
 import address as ad
 from library import bt_connect
 from library import timestamp as ts
 
-
-args = sys.argv
-IS_DEBUG = False
-if len(args) > 1 and args[1] == "-d":
-    IS_DEBUG = True
-
-
+IS_DEBUG: bool = True #デバッグ用かどうか
 TARGET: int = 2  # TARGET:接続する台数
 
 timestamp = ts.Timestamp(TARGET)
@@ -48,19 +41,19 @@ class Connection:
         self.__ras.sock.send((data).to_bytes(1, "little"))
         print("target={0} send:{1}".format(self.__proc_id, data))
 
-    def read(self):
+    def __read(self):
         return int.from_bytes(
             self.__ras.sock.recv(1), "little")
 
     def main_process(self):
         """メインプロセス"""
         try:
-            if not self.read():
+            if not self.__read():
                 raise Exception("")
             timestamp.change_aivable(self.__proc_id)
-            while not timestamp.timestamp():
+            while not timestamp.get_timestamp():
                 continue
-            self.__send(timestamp.timestamp())
+            self.__send(timestamp.get_timestamp())
         except KeyboardInterrupt:
             self.__send(-1)
             print("Connection Killed")

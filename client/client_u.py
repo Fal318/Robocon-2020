@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""クライアント側"""
+"""ウクレレ"""
 import time
 import pandas as pd
 import bluetooth as bt
@@ -7,7 +7,7 @@ from library import head, serial_connect
 
 BPM = 120
 LAG = 0.01
-
+PERIOD = 60/BPM
 
 def generate_send_data(path: str) -> list:
     original_df = pd.read_csv(path, index=False)
@@ -26,7 +26,6 @@ def calculate_send_data(string: int, bpm: int, timing: bool,
 
 def main():
     """main"""
-    period = 60/BPM
     send_data = generate_send_data("../data/data.csv")
     server_socket = bt.BluetoothSocket(bt.RFCOMM)
     maicon = None
@@ -34,10 +33,12 @@ def main():
         server_socket.bind(("", 1))
         server_socket.listen(1)
         client_socket = server_socket.accept()[0]
-        maicon = serial_connect.Serial_Connection("/dev/mbed", 9600)
+        maicon = serial_connect.Serial_Connection("/dev/mbed", 115200)
         print("Connect")
         client_socket.send(1)
         start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
+        if start_time < 0:
+            raise Exception("Failed")
         if start_time-time.time() > 0.2:
             time.sleep(start_time-time.time()-0.2)
         while start_time - time.time() > 0:
@@ -48,7 +49,7 @@ def main():
             time.sleep(LAG)
             for s in sd:
                 maicon.write(s)
-            time.sleep(time.time()-send_time-period)
+            time.sleep(time.time()-send_time-PERIOD)
     except KeyboardInterrupt:
         print("Connection Killed")
     else:

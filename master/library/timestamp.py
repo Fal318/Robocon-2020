@@ -12,7 +12,11 @@ class Timestamp:
             raise ValueError("index >= TARGET")
         self.__aivable[index] = True
 
-    def timestamp(self) -> int:
+    def get_timestamp(self) -> int:
         if not False in self.__aivable:
             self.ts = int((time.time()+2)*10000000)
         return self.ts
+
+
+if __name__ == "__main__":
+    pass
