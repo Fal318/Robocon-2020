@@ -27,7 +27,8 @@ def calculate_send_data(string: int, bpm: int, timing: bool,
 
 def main():
     """main"""
-    send_data = generate_send_data("../data/data.csv")
+    #send_data = generate_send_data("../data/data.csv")
+    send_data = []
     server_socket = bt.BluetoothSocket(bt.RFCOMM)
     maicon = None
     try:
