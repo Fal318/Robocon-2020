@@ -14,6 +14,8 @@ class Serial_Connection:
         except serial.SerialException:
             print("Serial Connection Failed")
             self.__aivable = False
+        else:
+            print("Serial Device is Connected")
 
     def write(self, data: int):
         """送信"""
@@ -22,6 +24,9 @@ class Serial_Connection:
     def read(self):
         """受信"""
         return self.__connection.read()
+
+    def is_aivable(self):
+        return self.__aivable
 
     def __del__(self):
         if self.__aivable:

@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 """PC側"""
+import time
 import threading
 import bluetooth as bt
 import address as ad
 from library import bt_connect
 from library import timestamp as ts
 
-IS_DEBUG: bool = True #デバッグ用かどうか
+HOST_NAME = ["ukulele", "percussion"]
+IS_DEBUG: bool = True  # デバッグ用かどうか
 TARGET: int = 2  # TARGET:接続する台数
-
 timestamp = ts.Timestamp(TARGET)
 
 
 class Connection:
     """通信を定周期で行う"""
+    STOP = False
 
     def __init__(self, proc_id: int):
         self.__proc_id: int = proc_id  # プロセスを識別するID
@@ -36,7 +38,7 @@ class Connection:
         """プロセスが有効かどうかを返す"""
         return self.__aivable
 
-    def __send(self, data: int, size:int):
+    def __send(self, data: int, size: int):
         """データ(整数値)を送信する"""
         self.__ras.sock.send((data).to_bytes(size, "little"))
         print("target={0} send:{1}".format(self.__proc_id, data))
@@ -49,21 +51,32 @@ class Connection:
         """メインプロセス"""
         try:
             if not self.__read():
-                raise Exception("")
+                raise Exception(f"{HOST_NAME[self.__proc_id]} was Failed")
+            else:
+                print(f"{time.time()}: {HOST_NAME[self.__proc_id]} is ready")
             timestamp.change_aivable(self.__proc_id)
             while not timestamp.get_timestamp():
                 continue
             self.__send(timestamp.get_timestamp(), 64)
+            self.__ras.set_timeout(0.1)
+            while not Connection.STOP:
+                try:
+                    self.__read()
+                except OSError:
+                    continue
+                else:
+                    Connection.STOP = True
+                    break
         except KeyboardInterrupt:
             self.__send(0, 1)
             print("Connection Killed")
-        except ValueError:
-            self.__send(-1, 1)
-            print("周期が早すぎます")
         except bt.BluetoothError:
             print("Connection Killed")
         else:
             self.__send(0, 1)
+
+    def get_status(self):
+        self.__read()
 
     def __del__(self):
         self.__ras.disconnect()
