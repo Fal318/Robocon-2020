@@ -15,7 +15,7 @@ timestamp = ts.Timestamp(TARGET)
 
 class Connection:
     """通信を定周期で行う"""
-    STOP = False
+    Failed = False
 
     def __init__(self, proc_id: int):
         self.__proc_id: int = proc_id  # プロセスを識別するID
@@ -59,13 +59,13 @@ class Connection:
                 continue
             self.__send(timestamp.get_timestamp(), 64)
             self.__ras.set_timeout(0.1)
-            while not Connection.STOP:
+            while not Connection.Failed:
                 try:
                     self.__read()
                 except OSError:
                     continue
                 else:
-                    Connection.STOP = True
+                    Connection.Failed  = True
                     break
         except KeyboardInterrupt:
             self.__send(0, 1)

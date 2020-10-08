@@ -46,10 +46,6 @@ def setup() -> list:
         return [server_socket, maicon, start_time]
 
 
-def main_connection():
-    pass
-
-
 def status_check(socket: bt.BluetoothSocket) -> int:
     while True:
         try:
@@ -63,7 +59,7 @@ def status_check(socket: bt.BluetoothSocket) -> int:
 def main_connection(maicon, start_time):
     """main"""
     # generated_data = generate_send_data("../data/data.csv")
-    generated_data = []
+    send_data = [[1, 1, 1] for _ in range(100)]  # test data
 
     try:
 

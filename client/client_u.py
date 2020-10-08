@@ -56,7 +56,7 @@ def status_check(socket: bt.BluetoothSocket) -> int:
 def main_connection(maicon, start_time):
     """main"""
     #send_data = generate_send_data("../data/data.csv")
-    send_data = []
+    send_data = [[1, 1, 1] for _ in range(100)]  # test data
     try:
         if start_time-time.time() > 0.2:
             time.sleep(start_time-time.time()-0.2)
