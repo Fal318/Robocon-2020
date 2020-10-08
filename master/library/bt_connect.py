@@ -112,7 +112,7 @@ class Connect:
             return False
 
     def set_timeout(self, timeout: int):
-        self.sock.timeout(timeout)
+        self.__sock.settimeout(timeout)
 
     def disconnect(self):
         """切断"""

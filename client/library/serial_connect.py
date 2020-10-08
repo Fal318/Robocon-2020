@@ -12,8 +12,8 @@ class Serial_Connection:
             self.__connection = serial.Serial(port, rate)
             self.__aivable = True
         except serial.SerialException:
-            print("Serial Connection Failed")
             self.__aivable = False
+            print("Serial Connection Failed")
         else:
             print("Serial Device is Connected")
 
@@ -31,7 +31,7 @@ class Serial_Connection:
     def __del__(self):
         if self.__aivable:
             self.write(0)
-        self.__connection.close()
+            self.__connection.close()
 
 
 if __name__ == "__main__":

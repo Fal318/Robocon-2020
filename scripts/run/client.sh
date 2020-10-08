@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo ntpdate -b ntp.nict.jp
+sudo ntpdate -b 192.168.10.10
 name=$HOSTNAME
 cd ../../client
 if [ $name == "ukulele" ]; then

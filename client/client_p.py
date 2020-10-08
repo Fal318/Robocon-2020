@@ -43,7 +43,7 @@ def setup() -> list:
     except:
         raise Exception("Setup Failed")
     else:
-        return [server_socket, maicon, start_time]
+        return [client_socket, maicon, start_time]
 
 
 def status_check(socket: bt.BluetoothSocket) -> int:
@@ -56,10 +56,10 @@ def status_check(socket: bt.BluetoothSocket) -> int:
             return recv
 
 
-def main_connection(maicon, start_time):
+def main_connection(socket, maicon, start_time):
     """main"""
     # generated_data = generate_send_data("../data/data.csv")
-    send_data = [[1, 1, 1] for _ in range(100)]  # test data
+    generated_data = [[[[1, 1, 1] for _ in range(100)], [120 for _ in range(100)]] for _ in range(100)]  # test data
 
     try:
 
@@ -72,14 +72,16 @@ def main_connection(maicon, start_time):
         print(time.time())
         if not maicon.is_aivable:
             return
-        for send_data, bpm in zip(*generated_data):
-            send_time = time.time()
-            time.sleep(LAG)
-            for s in send_data:
-                maicon.write(s)
-            time.sleep(send_time+get_period(bpm)-time.time())
-    except KeyboardInterrupt:
-        print("Connection Killed")
+        for send_data, bpms in generated_data:
+            for sd, bpm in zip(send_data, bpms):
+                send_time = time.time()
+                time.sleep(LAG)
+                for s in sd:
+                    maicon.write(s)
+                time.sleep(send_time+get_period(bpm)-time.time())
+    except:
+        print("Process is Failed")
+        socket.send(b'\x01')
     else:
         print("Connection Ended")
     finally:
@@ -87,15 +89,17 @@ def main_connection(maicon, start_time):
 
 
 def main():
-    soket, maicon, start_time = setup()
+    socket, maicon, start_time = setup()
     sub_thread = threading.Thread(
-        target=main_connection, args=(maicon, start_time))
+        target=main_connection, args=([socket, maicon, start_time]))
     main_thread = threading.Thread(
-        target=status_check, args=(soket, start_time))
+        target=status_check, args=([socket]))
     sub_thread.setDaemon(True)
     main_thread.start()
     sub_thread.start()
-    sub_thread.join()
+    main_thread.join()
+    if sub_thread.is_alive():
+        print("Process is Killed from master")
     exit(0)
 
 
