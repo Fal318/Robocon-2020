@@ -9,13 +9,13 @@ from library import timestamp as ts
 
 HOST_NAME = ["ukulele", "percussion"]
 IS_DEBUG: bool = True  # デバッグ用かどうか
-TARGET: int = 2  # TARGET:接続する台数
+TARGET: int = 1  # TARGET:接続する台数
 timestamp = ts.Timestamp(TARGET)
 
 
 class Connection:
     """通信を定周期で行う"""
-    Failed = False
+    Failed = False  # どちらかの通信先に異常があったか
 
     def __init__(self, proc_id: int):
         self.__proc_id: int = proc_id  # プロセスを識別するID
@@ -38,9 +38,9 @@ class Connection:
         """プロセスが有効かどうかを返す"""
         return self.__aivable
 
-    def __send(self, data: int, size: int):
+    def __send(self, data: int, bit_size: int):
         """データ(整数値)を送信する"""
-        self.__ras.sock.send((data).to_bytes(size, "little"))
+        self.__ras.sock.send((data).to_bytes(bit_size, "little"))
         print("target={0} send:{1}".format(self.__proc_id, data))
 
     def __read(self):
@@ -50,11 +50,12 @@ class Connection:
     def main_process(self):
         """メインプロセス"""
         try:
-            if not self.__read():
-                raise Exception(f"{HOST_NAME[self.__proc_id]} was Failed")
-            else:
+            if self.__read():
                 print(f"{time.time()}: {HOST_NAME[self.__proc_id]} is ready")
-            timestamp.change_aivable(self.__proc_id)
+            else:
+                raise Exception(f"{HOST_NAME[self.__proc_id]} is Failed")
+
+            timestamp.change_ready(self.__proc_id)
             while not timestamp.get_timestamp():
                 continue
             self.__send(timestamp.get_timestamp(), 64)
@@ -65,18 +66,15 @@ class Connection:
                 except OSError:
                     continue
                 else:
-                    Connection.Failed  = True
+                    Connection.Failed = True
                     break
         except KeyboardInterrupt:
             self.__send(0, 1)
-            print("Connection Killed")
+            print("Connection End")
         except bt.BluetoothError:
             print("Connection Killed")
         else:
             self.__send(0, 1)
-
-    def get_status(self):
-        self.__read()
 
     def __del__(self):
         self.__ras.disconnect()

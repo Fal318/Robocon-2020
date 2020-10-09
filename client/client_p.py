@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """パーカッション"""
+import sys
 import time
 import threading
+import serial
 import pandas as pd
 import bluetooth as bt
 from library import head, serial_connect
@@ -11,17 +13,18 @@ LAG = 0
 
 def generate_send_data(path: str) -> list:
     """送信するデータの配列とBPMを返す"""
-    original_df = pd.read_csv(path, index=False)
+    original_df = pd.read_csv(path)
     original_data = pd.DataFrame()
     for key in head.UKULELE:
         original_data[key] = original_df[key].fillna(0)
-    return [[calculate_send_data(*list(d)) for d in original_data.itertuples()], original_data["bpm"]]
+    return [[calculate_send_data(*list(d))
+             for d in original_data.itertuples()], original_data["bpm"]]
 
 
-def calculate_send_data(string: int, bpm: int, timing: bool,
-                        stroke: bool, chord: int, face: int, neck: int) -> list:
-    """各データから送信する値を計算して1Byteごとのlistにして返す"""
-    send_val = string*2**20 + bpm*2**13 + timing * 2**12 + \
+def calculate_send_data(args: list) -> list:
+    """送信データを1Byteごとに分割"""
+    bowstring, bpm, timing, stroke, chord, face, neck = args
+    send_val = bowstring*2**20 + bpm*2**13 + timing * 2**12 + \
         stroke * 2**11 * chord * 2**5 + face*2**2+neck
     return [send_val & 16711680, send_val & 65280, send_val & 255]
 
@@ -32,6 +35,7 @@ def get_period(bpm) -> float:
 
 
 def setup() -> list:
+    """セットアップ"""
     try:
         server_socket = bt.BluetoothSocket(bt.RFCOMM)
         server_socket.bind(("", 1))
@@ -40,13 +44,16 @@ def setup() -> list:
         maicon = serial_connect.Serial_Connection("/dev/mbed", 115200)
         client_socket.send(b'\x01')
         start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
-    except:
-        raise Exception("Setup Failed")
+    except serial.SerialException:
+        sys.exit("Setup Failed")
+    except bt.BluetoothError:
+        sys.exit("Setup Failed")
     else:
         return [client_socket, maicon, start_time]
 
 
 def status_check(socket: bt.BluetoothSocket) -> int:
+    """ステータスのチェック"""
     while True:
         try:
             recv = int.from_bytes(socket.recv(1), "little")
@@ -59,7 +66,8 @@ def status_check(socket: bt.BluetoothSocket) -> int:
 def main_connection(socket, maicon, start_time):
     """main"""
     # generated_data = generate_send_data("../data/data.csv")
-    generated_data = [[[[1, 1, 1] for _ in range(100)], [120 for _ in range(100)]] for _ in range(100)]  # test data
+    generated_data = [[[[1, 1, 1] for _ in range(
+        100)], [120 for _ in range(100)]] for _ in range(100)]  # test data
 
     try:
 
@@ -100,7 +108,7 @@ def main():
     main_thread.join()
     if sub_thread.is_alive():
         print("Process is Killed from master")
-    exit(0)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

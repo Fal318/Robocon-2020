@@ -12,7 +12,7 @@ class Connect:
         self.__bdaddr = addr
         self.__port = port
         self.__sock = bt.BluetoothSocket(bt.RFCOMM)
-        self.is_debug = is_debug
+        self.__is_debug = is_debug
 
     @property
     def name(self):
@@ -82,7 +82,7 @@ class Connect:
 
     def connectbluetooth(self, bdaddr: str, port: int) -> bool:
         """接続"""
-        if self.is_debug:
+        if self.__is_debug:
             for _ in range(4):
                 try:
                     if isinstance(self.__sock, bt.BluetoothSocket):
@@ -95,7 +95,6 @@ class Connect:
                     break
                 else:
                     return True
-            return False
         else:
             while True:
                 try:
@@ -109,9 +108,10 @@ class Connect:
                     break
                 else:
                     return True
-            return False
+        return False
 
     def set_timeout(self, timeout: int):
+        """タイムアウトの設定"""
         self.__sock.settimeout(timeout)
 
     def disconnect(self):
