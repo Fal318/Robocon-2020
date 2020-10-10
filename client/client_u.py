@@ -1,29 +1,53 @@
 # -*- coding: utf-8 -*-
 """ウクレレ"""
+import sys
 import time
 import threading
+import serial
 import pandas as pd
 import bluetooth as bt
+from cobs import cobs
 from library import head, serial_connect
 
-BPM = 120
-LAG = 0
-PERIOD = 60/BPM
+DELAY = 0
+
+
+class Lag:
+    def __init__(self):
+        self.__start_time = None
+        self.__period = []
+
+    def get_lag(self, period, send_time):
+        if self.__start_time is None:
+            self.__start_time = send_time
+        self.__period.append(period)
+        return self.__start_time + sum(self.__period) - time.time()
+
+
+def generate_cobs(value: int, byte_size: int = 3) -> bytes:
+    encoded = cobs.encode(value.to_bytes(byte_size, "big"))+b'\x00'
+    return [encoded[i:i+1] for i in range(byte_size+2)]
 
 
 def generate_send_data(path: str) -> list:
-    original_df = pd.read_csv(path, index=False)
+    original_df = pd.read_csv(path, header=False)
     original_data = pd.DataFrame()
     for key in head.UKULELE:
         original_data[key] = original_df[key].fillna(0)
-    return [calculate_send_data(*list(d)) for d in original_data.itertuples()]
+    return [[calculate_send_data(*list(d))
+             for d in original_data.itertuples()], original_data["bpm"]]
 
 
 def calculate_send_data(string: int, bpm: int, timing: bool,
                         stroke: bool, chord: int, face: int, neck: int) -> list:
     send_val = string*2**20 + bpm*2**13 + timing * 2**12 + \
         stroke * 2**11 * chord * 2**5 + face*2**2+neck
-    return [send_val & 16711680, send_val & 65280, send_val & 255]
+    return generate_cobs(send_val)
+
+
+def get_period(bpm) -> float:
+    """BPMから周期を返す"""
+    return 60 / bpm
 
 
 def setup() -> list:
@@ -37,8 +61,10 @@ def setup() -> list:
         start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
         if start_time <= 0:
             raise Exception("Failed")
-    except:
-        raise Exception("Setup Failed")
+    except serial.SerialException:
+        sys.exit("Setup Failed")
+    except bt.BluetoothError:
+        sys.exit("Setup Failed")
     else:
         return [client_socket, maicon, start_time]
 
@@ -56,7 +82,9 @@ def status_check(socket: bt.BluetoothSocket) -> int:
 def main_connection(socket, maicon, start_time):
     """main"""
     #generated_data = generate_send_data("../data/data.csv")
-    generated_data = [[1, 1, 1] for _ in range(100)]  # test data
+    generated_data = [[[[1, 1, 1] for _ in range(
+        100)], [120 for _ in range(100)]] for _ in range(100)]  # test data
+    lag = Lag()
     try:
         if start_time-time.time() > 0.2:
             time.sleep(start_time-time.time()-0.2)
@@ -65,18 +93,20 @@ def main_connection(socket, maicon, start_time):
         print(time.time())
         if not maicon.is_aivable:
             return
-        for sd in generated_data:
-            send_time = time.time()
-            time.sleep(LAG)
-            for s in sd:
-                maicon.write(s)
-            time.sleep(PERIOD+send_time-time.time())
+        for send_data, bpms in generated_data:
+            for sd, bpm in zip(send_data, bpms):
+                send_time = time.time()
+                time.sleep(DELAY)
+                for s in sd:
+                    maicon.write(s)
+                time.sleep(lag.get_lag(get_period(bpm), send_time))
     except:
         print("Process is Failed")
-        socket.send(b'\x01')
     else:
         print("Connection Ended")
-    
+    finally:
+        socket.send(b'\x01')
+        del maicon
 
 
 def main():

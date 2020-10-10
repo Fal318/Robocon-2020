@@ -17,13 +17,8 @@ class Serial_Connection:
         else:
             print("Serial Device is Connected")
 
-    def write(self, data: int):
-        """送信"""
-        self.__connection.write(struct.pack("b", data))
-
-    def read(self):
-        """受信"""
-        return self.__connection.read()
+    def write(self, data: bytes):
+        self.__connection.write(data)
 
     def is_aivable(self):
         return self.__aivable

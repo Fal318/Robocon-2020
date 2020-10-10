@@ -9,13 +9,13 @@ from library import timestamp as ts
 
 HOST_NAME = ["ukulele", "percussion"]
 IS_DEBUG: bool = True  # デバッグ用かどうか
-TARGET: int = 1  # TARGET:接続する台数
+TARGET: int = 2  # TARGET:接続する台数
 timestamp = ts.Timestamp(TARGET)
 
 
 class Connection:
     """通信を定周期で行う"""
-    Failed = False  # どちらかの通信先に異常があったか
+    Ended = False
 
     def __init__(self, proc_id: int):
         self.__proc_id: int = proc_id  # プロセスを識別するID
@@ -60,20 +60,18 @@ class Connection:
                 continue
             self.__send(timestamp.get_timestamp(), 64)
             self.__ras.set_timeout(0.1)
-            while not Connection.Failed:
+            while not Connection.Ended:
                 try:
                     self.__read()
                 except OSError:
                     continue
                 else:
-                    Connection.Failed = True
-                    break
+                    Connection.Ended = True
         except KeyboardInterrupt:
-            self.__send(0, 1)
             print("Connection End")
         except bt.BluetoothError:
             print("Connection Killed")
-        else:
+        finally:
             self.__send(0, 1)
 
     def __del__(self):
