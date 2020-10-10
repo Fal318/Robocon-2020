@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """シリアル通信"""
 import serial
-import struct
+
+
+STOP_BYTE = [b'\x01', b'\x01', b'\x01', b'\x01', b'\x00']
 
 
 class Serial_Connection:
@@ -25,7 +27,8 @@ class Serial_Connection:
 
     def __del__(self):
         if self.__aivable:
-            self.write(0)
+            for b in STOP_BYTE:
+                self.write(b)
             self.__connection.close()
 
 
