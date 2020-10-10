@@ -9,7 +9,7 @@ from library import timestamp as ts
 
 HOST_NAME = ["ukulele", "percussion"]
 IS_DEBUG: bool = True  # デバッグ用かどうか
-TARGET: int = 2  # TARGET:接続する台数
+TARGET: int = 1  # TARGET:接続する台数
 timestamp = ts.Timestamp(TARGET)
 
 
