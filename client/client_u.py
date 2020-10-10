@@ -13,15 +13,16 @@ DELAY = 0
 
 
 class Lag:
-    def __init__(self):
+    def __init__(self, period):
         self.__start_time = None
-        self.__period = []
+        self.__period = period
+        self.__loop_count = 0
 
-    def get_lag(self, period, send_time):
+    def get_lag(self, send_time):
+        self.__loop_count += 1
         if self.__start_time is None:
             self.__start_time = send_time
-        self.__period.append(period)
-        return self.__start_time + sum(self.__period) - time.time()
+        return self.__start_time + self.__period*self.__loop_count - time.time()
 
 
 def generate_cobs(value: int, byte_size: int = 3) -> bytes:
@@ -56,9 +57,10 @@ def setup() -> list:
         server_socket.bind(("", 1))
         server_socket.listen(1)
         client_socket = server_socket.accept()[0]
+        bpm = int.from_bytes(client_socket.recv(8), "big")
         maicon = serial_connect.Serial_Connection("/dev/ttyACM0", 115200)
         client_socket.send(b'\x01')
-        start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
+        start_time = int.from_bytes(client_socket.recv(64), "big")/10000000
         if start_time <= 0:
             raise Exception("Failed")
     except serial.SerialException:
@@ -66,25 +68,25 @@ def setup() -> list:
     except bt.BluetoothError:
         sys.exit("Setup Failed")
     else:
-        return [client_socket, maicon, start_time]
+        return [client_socket, maicon, start_time, bpm]
 
 
 def status_check(socket: bt.BluetoothSocket) -> int:
     while True:
         try:
-            recv = int.from_bytes(socket.recv(1), "little")
+            recv = int.from_bytes(socket.recv(1), "big")
         except bt.BluetoothError:
             continue
         else:
             return recv
 
 
-def main_connection(socket, maicon, start_time):
+def main_connection(socket, maicon, start_time, bpm):
     """main"""
     #generated_data = generate_send_data("../data/data.csv")
     generated_data = [[generate_cobs(i) for i in range(1, 100)], [
         480 for _ in range(100)]]  # test data
-    lag = Lag()
+    lag = Lag(60/bpm)
     try:
         if start_time-time.time() > 0.2:
             time.sleep(start_time-time.time()-0.2)
@@ -99,7 +101,7 @@ def main_connection(socket, maicon, start_time):
             time.sleep(DELAY)
             for s in sd:
                 maicon.write(s)
-            time.sleep(lag.get_lag(get_period(bpm), send_time))
+            time.sleep(lag.get_lag(send_time))
     except Exception as e:
         print(e)
         print("Process is Failed")
@@ -111,10 +113,9 @@ def main_connection(socket, maicon, start_time):
 
 
 def main():
-    socket, maicon, start_time = setup()
-    print()
+    socket, maicon, start_time, bpm = setup()
     sub_thread = threading.Thread(
-        target=main_connection, args=([socket, maicon, start_time]))
+        target=main_connection, args=([socket, maicon, start_time, bpm]))
     main_thread = threading.Thread(
         target=status_check, args=([socket]))
     sub_thread.setDaemon(True)
@@ -123,7 +124,7 @@ def main():
     main_thread.join()
     if sub_thread.is_alive():
         print("Process is Killed from master")
-    exit(0)
+    sys.exit(0)
 
 
 if __name__ == "__main__":

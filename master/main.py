@@ -10,6 +10,7 @@ from library import timestamp as ts
 HOST_NAME = ["ukulele", "percussion"]
 IS_DEBUG: bool = True  # デバッグ用かどうか
 TARGET: int = 2  # TARGET:接続する台数
+BPM = 120
 timestamp = ts.Timestamp(TARGET)
 
 
@@ -28,9 +29,11 @@ class Connection:
             if self.__ras.connectbluetooth(self.__ras.bdaddr, self.__ras.port):
                 self.__aivable = True
                 print("Connect")
+                self.__send(BPM, 8)
             else:
                 self.__aivable = False
                 print("Connection Failed")
+
         except IndexError:
             self.__aivable = False
 
@@ -40,12 +43,12 @@ class Connection:
 
     def __send(self, data: int, bit_size: int):
         """データ(整数値)を送信する"""
-        self.__ras.sock.send((data).to_bytes(bit_size, "little"))
+        self.__ras.sock.send((data).to_bytes(bit_size, "big"))
         print("target={0} send:{1}".format(self.__proc_id, data))
 
     def __read(self):
         return int.from_bytes(
-            self.__ras.sock.recv(1), "little")
+            self.__ras.sock.recv(1), "big")
 
     def main_process(self):
         """メインプロセス"""
