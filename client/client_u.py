@@ -56,7 +56,7 @@ def setup() -> list:
         server_socket.bind(("", 1))
         server_socket.listen(1)
         client_socket = server_socket.accept()[0]
-        maicon = serial_connect.Serial_Connection("/dev/mbed", 115200)
+        maicon = serial_connect.Serial_Connection("/dev/ttyACM0", 115200)
         client_socket.send(b'\x01')
         start_time = int.from_bytes(client_socket.recv(64), "little")/10000000
         if start_time <= 0:
@@ -82,8 +82,8 @@ def status_check(socket: bt.BluetoothSocket) -> int:
 def main_connection(socket, maicon, start_time):
     """main"""
     #generated_data = generate_send_data("../data/data.csv")
-    generated_data = [[[[1, 1, 1] for _ in range(
-        100)], [120 for _ in range(100)]] for _ in range(100)]  # test data
+    generated_data = [[generate_cobs(i) for i in range(1, 100)], [
+        480 for _ in range(100)]]  # test data
     lag = Lag()
     try:
         if start_time-time.time() > 0.2:
@@ -93,14 +93,15 @@ def main_connection(socket, maicon, start_time):
         print(time.time())
         if not maicon.is_aivable:
             return
-        for send_data, bpms in generated_data:
-            for sd, bpm in zip(send_data, bpms):
-                send_time = time.time()
-                time.sleep(DELAY)
-                for s in sd:
-                    maicon.write(s)
-                time.sleep(lag.get_lag(get_period(bpm), send_time))
-    except:
+
+        for sd, bpm in zip(*generated_data):
+            send_time = time.time()
+            time.sleep(DELAY)
+            for s in sd:
+                maicon.write(s)
+            time.sleep(lag.get_lag(get_period(bpm), send_time))
+    except Exception as e:
+        print(e)
         print("Process is Failed")
     else:
         print("Connection Ended")
