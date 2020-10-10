@@ -29,7 +29,6 @@ class Connection:
             if self.__ras.connectbluetooth(self.__ras.bdaddr, self.__ras.port):
                 self.__aivable = True
                 print("Connect")
-                self.__send(BPM, 8)
             else:
                 self.__aivable = False
                 print("Connection Failed")
@@ -53,6 +52,7 @@ class Connection:
     def main_process(self):
         """メインプロセス"""
         try:
+            self.__send(BPM, 8)
             if self.__read():
                 print(f"{time.time()}: {HOST_NAME[self.__proc_id]} is ready")
             else:

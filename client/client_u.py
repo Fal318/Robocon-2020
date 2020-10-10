@@ -46,11 +46,6 @@ def calculate_send_data(string: int, bpm: int, timing: bool,
     return generate_cobs(send_val)
 
 
-def get_period(bpm) -> float:
-    """BPMから周期を返す"""
-    return 60 / bpm
-
-
 def setup() -> list:
     try:
         server_socket = bt.BluetoothSocket(bt.RFCOMM)
@@ -92,7 +87,7 @@ def main_connection(socket, maicon, start_time, bpm):
             time.sleep(start_time-time.time()-0.2)
         while start_time - time.time() > 0:
             time.sleep(0.001)
-        print(time.time())
+
         if not maicon.is_aivable:
             return
 
@@ -102,9 +97,10 @@ def main_connection(socket, maicon, start_time, bpm):
             for s in sd:
                 maicon.write(s)
             time.sleep(lag.get_lag(send_time))
-    except Exception as e:
-        print(e)
-        print("Process is Failed")
+    except KeyboardInterrupt:
+        print("Connection End")
+    except bt.BluetoothError:
+        print("Connection Killed")
     else:
         print("Connection Ended")
     finally:
@@ -114,6 +110,9 @@ def main_connection(socket, maicon, start_time, bpm):
 
 def main():
     socket, maicon, start_time, bpm = setup()
+
+    print(bpm)
+
     sub_thread = threading.Thread(
         target=main_connection, args=([socket, maicon, start_time, bpm]))
     main_thread = threading.Thread(

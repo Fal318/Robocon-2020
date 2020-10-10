@@ -48,11 +48,6 @@ def generate_send_data(path: str) -> list:
              for d in original_data.itertuples()], original_data["bpm"]]
 
 
-def get_period(bpm) -> float:
-    """BPMから周期を返す"""
-    return 60 / bpm
-
-
 def setup() -> list:
     """セットアップ"""
     try:
@@ -97,7 +92,7 @@ def main_connection(socket, maicon, start_time, bpm):
             time.sleep(start_time-time.time()-0.2)
         while start_time - time.time() > 0:
             time.sleep(0.001)
-        print(time.time())
+
         if not maicon.is_aivable:
             return
         for send_data, bpms in generated_data:
@@ -119,6 +114,9 @@ def main_connection(socket, maicon, start_time, bpm):
 
 def main():
     socket, maicon, start_time, bpm = setup()
+
+    print(bpm)
+
     sub_thread = threading.Thread(
         target=main_connection, args=([socket, maicon, start_time, bpm]))
     main_thread = threading.Thread(
