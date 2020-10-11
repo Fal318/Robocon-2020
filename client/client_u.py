@@ -4,12 +4,10 @@ import sys
 import time
 import threading
 import serial
+import bluetooth
 import pandas as pd
-import bluetooth as bt
-from cobs import cobs
+import config
 from library import head, serial_connect
-
-DELAY = 0
 
 
 class Lag:
@@ -25,11 +23,6 @@ class Lag:
         return self.__start_time + self.__period*self.__loop_count - time.time()
 
 
-def generate_cobs(value: int, byte_size: int = 3) -> bytes:
-    encoded = cobs.encode(value.to_bytes(byte_size, "big"))+b'\x00'
-    return [encoded[i:i+1] for i in range(byte_size+2)]
-
-
 def generate_send_data(path: str) -> list:
     original_df = pd.read_csv(path, header=False)
     original_data = pd.DataFrame()
@@ -43,34 +36,35 @@ def calculate_send_data(string: int, bpm: int, timing: bool,
                         stroke: bool, chord: int, face: int, neck: int) -> list:
     send_val = string*2**20 + bpm*2**13 + timing * 2**12 + \
         stroke * 2**11 * chord * 2**5 + face*2**2+neck
-    return generate_cobs(send_val)
+    return send_val
 
 
 def setup() -> list:
     try:
-        server_socket = bt.BluetoothSocket(bt.RFCOMM)
+        server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         server_socket.bind(("", 1))
         server_socket.listen(1)
         client_socket = server_socket.accept()[0]
         bpm = int.from_bytes(client_socket.recv(8), "big")
-        maicon = serial_connect.Serial_Connection("/dev/ttyACM0", 115200)
+        maicon = serial_connect.Connection(
+            dev="/dev/ttyACM0", rate=115200, data_size=config.BYTE_SIZE)
         client_socket.send(b'\x01')
         start_time = int.from_bytes(client_socket.recv(64), "big")/10000000
         if start_time <= 0:
             raise Exception("Failed")
     except serial.SerialException:
         sys.exit("Setup Failed")
-    except bt.BluetoothError:
+    except bluetooth.BluetoothError:
         sys.exit("Setup Failed")
     else:
         return [client_socket, maicon, start_time, bpm]
 
 
-def status_check(socket: bt.BluetoothSocket) -> int:
+def status_check(socket: bluetooth.BluetoothSocket) -> int:
     while True:
         try:
             recv = int.from_bytes(socket.recv(1), "big")
-        except bt.BluetoothError:
+        except bluetooth.BluetoothError:
             continue
         else:
             return recv
@@ -79,7 +73,7 @@ def status_check(socket: bt.BluetoothSocket) -> int:
 def main_connection(socket, maicon, start_time, bpm):
     """main"""
     #generated_data = generate_send_data("../data/data.csv")
-    generated_data = [[generate_cobs(i) for i in range(1, 100)], [
+    generated_data = [[i for i in range(1, 10000)], [
         480 for _ in range(100)]]  # test data
     lag = Lag(60/bpm)
     try:
@@ -93,19 +87,19 @@ def main_connection(socket, maicon, start_time, bpm):
 
         for sd, bpm in zip(*generated_data):
             send_time = time.time()
-            time.sleep(DELAY)
-            for s in sd:
-                maicon.write(s)
+            time.sleep(config.UKULELE_DELAY)
+            maicon.write(sd)
             time.sleep(lag.get_lag(send_time))
     except KeyboardInterrupt:
         print("Connection End")
-    except bt.BluetoothError:
+    except bluetooth.BluetoothError:
         print("Connection Killed")
     else:
         print("Connection Ended")
     finally:
-        socket.send(b'\x01')
         del maicon
+        socket.send(b'\x01')
+        
 
 
 def main():

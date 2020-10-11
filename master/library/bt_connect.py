@@ -7,12 +7,11 @@ import bluetooth as bt
 class Connect:
     """BT"""
 
-    def __init__(self, name: str, addr: str, port: int, is_debug: bool = False):
+    def __init__(self, name: str, addr: str, port: int):
         self.__name = name
         self.__bdaddr = addr
         self.__port = port
         self.__sock = bt.BluetoothSocket(bt.RFCOMM)
-        self.__is_debug = is_debug
 
     @property
     def name(self):
@@ -74,40 +73,25 @@ class Connect:
         """setter"""
         self.__sock = value
 
-    def reconnect(self, addr: str, num: int):
+    def reconnect(self):
         """再接続"""
-        self.__bdaddr = addr
-        self.__port = num
         self.__sock = bt.BluetoothSocket(bt.RFCOMM)
 
-    def connectbluetooth(self, bdaddr: str, port: int) -> bool:
+    def connectbluetooth(self) -> bool:
         """接続"""
-        if self.__is_debug:
-            for _ in range(4):
-                try:
-                    if isinstance(self.__sock, bt.BluetoothSocket):
-                        self.__sock.connect((bdaddr, port))
-                        time.sleep(1)
-                except bt.BluetoothError:
-                    self.reconnect(bdaddr, port)
-                    time.sleep(0.25)
-                except KeyboardInterrupt:
-                    break
-                else:
-                    return True
-        else:
-            while True:
-                try:
-                    if isinstance(self.__sock, bt.BluetoothSocket):
-                        self.__sock.connect((bdaddr, port))
-                        time.sleep(1)
-                except bt.BluetoothError:
-                    self.reconnect(bdaddr, port)
-                    time.sleep(0.25)
-                except KeyboardInterrupt:
-                    break
-                else:
-                    return True
+
+        while True:
+            try:
+                if isinstance(self.__sock, bt.BluetoothSocket):
+                    self.__sock.connect((self.__bdaddr, self.__port))
+                    time.sleep(1)
+            except bt.BluetoothError:
+                self.reconnect()
+                time.sleep(0.25)
+            except KeyboardInterrupt:
+                break
+            else:
+                return True
         return False
 
     def set_timeout(self, timeout: int):

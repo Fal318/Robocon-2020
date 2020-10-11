@@ -1,67 +1,67 @@
 """key.py"""
-# -*- coding: utf-8 -*-
+# -*- cding: utf-8 -*-
 
 KEYNAME = tuple(["C", "CS", "D", "DS", "E", "F",
                  "FS", "G", "GS", "A", "AS", "B"])
 
-CHORD_TO_VALUES = {
-    "CO": 0, "COm": 1, "CO7": 2, "COm7": 3, "COdm": 4,
-    "CSO": 5, "CSOm": 6, "CSO7": 7, "CSOm7": 8, "CSOdm": 9,
-    "DO": 10, "DOm": 11, "DO7": 12, "DOm7": 13, "DOdm": 14,
-    "DSO": 15, "DSOm": 16, "DSO7": 17, "DSOm7": 18, "DSOdm": 19,
-    "EO": 20, "EOm": 21, "EO7": 22, "EOm7": 23, "EOdm": 24,
-    "FO": 25, "FOm": 26, "FO7": 27, "FOm7": 28, "FOdm": 29,
-    "FSO": 30, "FSOm": 21, "FSO7": 22, "FSOm7": 33, "FSOdm": 34,
-    "GO": 35, "GOm": 36, "GO7": 37, "GOm7": 38, "GOdm": 39,
-    "GSO": 40, "GSOm": 41, "GSO7": 42, "GSOm7": 43, "GSOdm": 44,
-    "AO": 45, "AOm": 46, "AO7": 47, "AOm7": 48, "AOdm": 49,
-    "ASO": 50, "ASOm": 51, "ASO7": 52, "ASOm7": 53, "ASOdm": 54,
-    "BO": 55, "BOm": 56, "BO7": 57, "BOm7": 58, "BOdm": 59,
+CHRD_T_VALUES = {
+    "C": 0, "Cm": 1, "C7": 2, "Cm7": 3, "Cdm": 4,
+    "CS": 5, "CSm": 6, "CS7": 7, "CSm7": 8, "CSdm": 9,
+    "D": 10, "Dm": 11, "D7": 12, "Dm7": 13, "Ddm": 14,
+    "DS": 15, "DSm": 16, "DS7": 17, "DSm7": 18, "DSdm": 19,
+    "E": 20, "Em": 21, "E7": 22, "Em7": 23, "Edm": 24,
+    "F": 25, "Fm": 26, "F7": 27, "Fm7": 28, "Fdm": 29,
+    "FS": 30, "FSm": 21, "FS7": 22, "FSm7": 33, "FSdm": 34,
+    "G": 35, "Gm": 36, "G7": 37, "Gm7": 38, "Gdm": 39,
+    "GS": 40, "GSm": 41, "GS7": 42, "GSm7": 43, "GSdm": 44,
+    "A": 45, "Am": 46, "A7": 47, "Am7": 48, "Adm": 49,
+    "AS": 50, "ASm": 51, "AS7": 52, "ASm7": 53, "ASdm": 54,
+    "B": 55, "Bm": 56, "B7": 57, "Bm7": 58, "Bdm": 59,
 
 }
 
-KEY_TO_CHORD = {
+KEY_T_CHRD = {
     # メジャー
-    tuple(["C", "E", "G"]): "CO", tuple(["CS", "ES", "GS"]): "CSO",
-    tuple(["A", "D", "FS"]): "DO", tuple(["AS", "DS", "F"]): "DSO",
-    tuple(["B", "E", "GS"]): "EO", tuple(["A", "C", "F"]): "FO",
-    tuple(["AS", "CS", "FS"]): "FSO", tuple(["B", "D", "G"]): "GO",
-    tuple(["BS", "DS", "GS"]): "GSO", tuple(["A", "CS", "E"]): "AO",
-    tuple(["AS", "CS", "ES"]): "ASO", tuple(["B", "DS", "FS"]): "BO",
+    tuple(["C", "E", "G"]): "C", tuple(["CS", "ES", "GS"]): "CS",
+    tuple(["A", "D", "FS"]): "D", tuple(["AS", "DS", "G"]): "DS",
+    tuple(["B", "E", "GS"]): "E", tuple(["A", "C", "F"]): "F",
+    tuple(["AS", "CS", "FS"]): "FS", tuple(["B", "D", "G"]): "G",
+    tuple(["BS", "DS", "GS"]): "GS", tuple(["A", "CS", "E"]): "A",
+    tuple(["AS", "D", "F"]): "AS", tuple(["B", "DS", "FS"]): "B",
     # マイナー
-    tuple(["C", "DS", "G"]): "COm", tuple(["CS", "E", "GS"]): "CSOm",
-    tuple(["A", "D", "F"]): "DOm", tuple(["AS", "DS", "FS"]): "DSOm",
-    tuple(["B", "E", "G"]): "EOm", tuple(["A", "C", "GS"]): "FOm",
-    tuple(["A", "CS", "FS"]): "FSOm", tuple(["AS", "D", "G"]): "GOm",
-    tuple(["B", "DS", "GS"]): "GSOm", tuple(["A", "C", "E"]): "AOm",
-    tuple(["AS", "CS", "ES"]): "ASOm", tuple(["B", "DS", "FS"]): "BOm",
+    tuple(["C", "DS", "G"]): "Cm", tuple(["CS", "E", "GS"]): "CSm",
+    tuple(["A", "D", "F"]): "Dm", tuple(["AS", "DS", "FS"]): "DSm",
+    tuple(["B", "E", "G"]): "Em", tuple(["F", "GS", "C"]): "Fm",
+    tuple(["A", "CS", "FS"]): "FSm", tuple(["AS", "D", "G"]): "Gm",
+    tuple(["B", "DS", "GS"]): "GSm", tuple(["A", "C", "E"]): "Am",
+    tuple(["AS", "CS", "ES"]): "ASm", tuple(["B", "D", "FS"]): "Bm",
     # セブンス
-    tuple(["AS",  "C", "E", "G", ]): "CO7", tuple(["B", "CS", "ES", "GS"]): "CSO7",
-    tuple(["A", "C", "D", "FS"]): "DO7", tuple(["AS", "CS", "DS" "G"]): "DSO7",
-    tuple(["B", "D", "E", "GS"]): "EO7", tuple(["A", "C", "DS", "F"]): "FO7",
-    tuple(["AS", "CS", "E", "FS"]): "FSO7", tuple(["B", "D", "F", "G"]): "GO7",
-    tuple(["C", "DS", "FS", "GS"]): "GSO7", tuple(["A", "CS", "E", "G"]): "AO7",
-    tuple(["AS", "D", "F", "GS"]): "ASO7", tuple(["A", "B", "DS", "FS"]): "BO7",
+    tuple(["AS",  "C", "E", "G", ]): "C7", tuple(["B", "CS", "ES", "GS"]): "CS7",
+    tuple(["A", "C", "D", "FS"]): "D7", tuple(["AS", "CS", "DS" "G"]): "DS7",
+    tuple(["B", "D", "E", "GS"]): "E7", tuple(["A", "C", "DS", "F"]): "F7",
+    tuple(["AS", "CS", "E", "FS"]): "FS7", tuple(["B", "D", "F", "G"]): "G7",
+    tuple(["C", "DS", "FS", "GS"]): "GS7", tuple(["A", "CS", "E", "G"]): "A7",
+    tuple(["AS", "D", "F", "GS"]): "AS7", tuple(["A", "B", "DS", "FS"]): "B7",
     # マイナーセブンス
-    tuple(["B", "C", "E", "G"]): "COm7", tuple(["BS", "CS", "ES", "GS"]): "CSOm7",
-    tuple(["A", "CS", "D", "FS"]): "DOm7", tuple(["AS", "D", "DS", "G"]): "DSOm7",
-    tuple(["B", "DS", "E", "GS"]): "EOm7", tuple(["A", "C", "E", "F"]): "FOm7",
-    tuple(["AS", "CS", "F", "FS"]): "FSOm7", tuple(["B", "D", "FS", "G"]): "GOm7",
-    tuple(["C", "DS", "G", "GS"]): "GSOm7", tuple(["A", "CS", "E", "GS"]): "AOm7",
-    tuple(["A", "AS", "D", "F"]): "ASOm7", tuple(["AS", "B", "DS", "FS"]): "BOm7",  # ここまで
+    tuple(["B", "C", "E", "G"]): "Cm7", tuple(["CS", "F", "GS", "C"]): "CSm7",
+    tuple(["A", "CS", "D", "FS"]): "Dm7", tuple(["AS", "D", "DS", "G"]): "DSm7",
+    tuple(["B", "DS", "E", "GS"]): "Em7", tuple(["A", "C", "E", "F"]): "Fm7",
+    tuple(["AS", "CS", "F", "FS"]): "FSm7", tuple(["B", "D", "FS", "G"]): "Gm7",
+    tuple(["C", "DS", "G", "GS"]): "GSm7", tuple(["A", "CS", "E", "GS"]): "Am7",
+    tuple(["A", "AS", "D", "F"]): "ASm7", tuple(["AS", "B", "DS", "FS"]): "Bm7",  # ここまで
     # ディミニッシュ
-    tuple(["C", "DS", "FS"]): "COdm", tuple(["CS", "E", "G"]): "CSOdm",
-    tuple(["D", "F", "GS"]): "DOdm", tuple(["A", "FS", "DS"]): "DSOdm",
-    tuple(["AS", "G", "E"]): "EOdm", tuple(["B", "GS", "F"]): "FOdm",
-    tuple(["AS", "CS", "G"]): "FSOdm", tuple(["CS", "G", "GS"]): "GOdm",
-    tuple(["B", "D", "GS"]): "GSOdm", tuple(["A", "C", "DS"]): "AOdm",
-    tuple(["AS", "CS", "E"]): "ASOdm", tuple(["B", "D", "F"]): "BOdm",
+    tuple(["C", "DS", "FS"]): "Cdm", tuple(["CS", "E", "G"]): "CSdm",
+    tuple(["D", "F", "GS"]): "Ddm", tuple(["A", "FS", "DS"]): "DSdm",
+    tuple(["AS", "G", "E"]): "Edm", tuple(["B", "GS", "F"]): "Fdm",
+    tuple(["A", "C", "FS"]): "FSdm", tuple(["CS", "G", "AS"]): "Gdm",
+    tuple(["B", "D", "GS"]): "GSdm", tuple(["A", "C", "DS"]): "Adm",
+    tuple(["AS", "CS", "E"]): "ASdm", tuple(["B", "D", "F"]): "Bdm",
 }
 
 
-def key_to_value(*args):
-    chord = KEY_TO_CHORD[args]
-    return CHORD_TO_VALUES[chord]
+def key_t_value(*args):
+    chrd = KEY_T_CHRD[args]
+    return CHRD_T_VALUES[chrd]
 
 
 if __name__ == "__main__":

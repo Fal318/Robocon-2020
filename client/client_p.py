@@ -4,12 +4,10 @@ import sys
 import time
 import threading
 import serial
+import bluetooth
 import pandas as pd
-import bluetooth as bt
-from cobs import cobs
+import config
 from library import head, serial_connect
-
-DELAY = 0
 
 
 class Lag:
@@ -25,17 +23,12 @@ class Lag:
         return self.__start_time + self.__period*self.__loop_count - time.time()
 
 
-def generate_cobs(value: int, byte_size: int = 3) -> bytes:
-    encoded = cobs.encode(value.to_bytes(byte_size, "big"))+b'\x00'
-    return [encoded[i:i+1] for i in range(byte_size+2)]
-
-
 def calculate_send_data(args: list) -> list:
     """送信データを1Byteごとに分割"""
     bowstring, bpm, timing, stroke, chord, face, neck = args
     send_val = bowstring*2**20 + bpm*2**13 + timing * 2**12 + \
         stroke * 2**11 * chord * 2**5 + face*2**2+neck
-    return generate_cobs(send_val)
+    return send_val
 
 
 def generate_send_data(path: str) -> list:
@@ -51,28 +44,29 @@ def generate_send_data(path: str) -> list:
 def setup() -> list:
     """セットアップ"""
     try:
-        server_socket = bt.BluetoothSocket(bt.RFCOMM)
+        server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         server_socket.bind(("", 1))
         server_socket.listen(1)
         client_socket = server_socket.accept()[0]
         bpm = int.from_bytes(client_socket.recv(8), "big")
-        maicon = serial_connect.Serial_Connection("/dev/mbed", 115200)
+        maicon = serial_connect.Connection(
+            dev="/dev/ttyACM0", rate=115200, data_size=config.BYTE_SIZE)
         client_socket.send(b'\x01')
         start_time = int.from_bytes(client_socket.recv(64), "big")/10000000
     except serial.SerialException:
         sys.exit("Setup Failed")
-    except bt.BluetoothError:
+    except bluetooth.BluetoothError:
         sys.exit("Setup Failed")
     else:
         return [client_socket, maicon, start_time, bpm]
 
 
-def status_check(socket: bt.BluetoothSocket) -> int:
+def status_check(socket: bluetooth.BluetoothSocket) -> int:
     """ステータスのチェック"""
     while True:
         try:
             recv = int.from_bytes(socket.recv(1), "big")
-        except bt.BluetoothError:
+        except bluetooth.BluetoothError:
             continue
         else:
             return recv
@@ -81,9 +75,9 @@ def status_check(socket: bt.BluetoothSocket) -> int:
 def main_connection(socket, maicon, start_time, bpm):
     """main"""
     # generated_data = generate_send_data("../data/data.csv")
-    generated_data = [[[[1, 1, 1] for _ in range(
-        100)], [120 for _ in range(100)]] for _ in range(100)]  # test data
-    lag = Lag(bpm/60)
+    generated_data = [[i for i in range(1, 10000)], [
+        480 for _ in range(100)]]  # test data
+    lag = Lag(60/bpm)
     try:
 
         if start_time <= 0:
@@ -95,21 +89,20 @@ def main_connection(socket, maicon, start_time, bpm):
 
         if not maicon.is_aivable:
             return
-        for send_data, bpms in generated_data:
-            for sd, bpm in zip(send_data, bpms):
-                send_time = time.time()
-                time.sleep(DELAY)
-                for s in sd:
-                    maicon.write(s)
-                time.sleep(lag.get_lag(send_time))
+        for sd, bpm in zip(*generated_data):
+            send_time = time.time()
+            time.sleep(config.PERCUSSION_DELAY)
+            maicon.write(sd)
+            time.sleep(lag.get_lag(send_time))
 
-    except:
+    except serial.SerialException:
         print("Process is Failed")
     else:
         print("Connection Ended")
     finally:
-        socket.send(b'\x01')
         del maicon
+        socket.send(b'\x01')
+        
 
 
 def main():

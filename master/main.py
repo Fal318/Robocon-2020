@@ -2,7 +2,7 @@
 """PC側"""
 import time
 import threading
-import bluetooth as bt
+import bluetooth
 import address as ad
 from library import bt_connect
 from library import timestamp as ts
@@ -10,7 +10,7 @@ from library import timestamp as ts
 HOST_NAME = ["ukulele", "percussion"]
 IS_DEBUG: bool = True  # デバッグ用かどうか
 TARGET: int = 2  # TARGET:接続する台数
-BPM = 120
+BPM = 1200
 timestamp = ts.Timestamp(TARGET)
 
 
@@ -24,9 +24,9 @@ class Connection:
         try:
             # 通信用のインスタンスを生成
             self.__ras = bt_connect.Connect("ras{0}".format(
-                self.__proc_id), ad.CLIENT[self.__proc_id], 1, IS_DEBUG)
+                self.__proc_id), ad.CLIENT[self.__proc_id], 1)
 
-            if self.__ras.connectbluetooth(self.__ras.bdaddr, self.__ras.port):
+            if self.__ras.connectbluetooth():
                 self.__aivable = True
                 print("Connect")
             else:
@@ -35,7 +35,7 @@ class Connection:
 
         except IndexError:
             self.__aivable = False
-
+ 
     def is_aivable(self) -> bool:
         """プロセスが有効かどうかを返す"""
         return self.__aivable
@@ -72,7 +72,7 @@ class Connection:
                     Connection.Ended = True
         except KeyboardInterrupt:
             print("Connection End")
-        except bt.BluetoothError:
+        except bluetooth.BluetoothError:
             print("Connection Killed")
         finally:
             self.__send(0, 1)
