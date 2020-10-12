@@ -32,10 +32,12 @@ def generate_send_data(path: str) -> list:
              for d in original_data.itertuples()], original_data["bpm"]]
 
 
-def calculate_send_data(string: int, bpm: int, timing: bool,
-                        stroke: bool, chord: int, face: int, neck: int) -> list:
-    send_val = string*2**20 + bpm*2**13 + timing * 2**12 + \
-        stroke * 2**11 * chord * 2**5 + face*2**2+neck
+def calculate_send_data(bpm: int, timing: bool, bownum: int,
+                        fret1: int, fret2: int, fret3: int, fret4: int,
+                        stroke: bool, chord: int, face: int, neck: int) -> int:
+    send_val = bpm*2**28 + timing * 2**27 + bownum * 2**24 + \
+        fret1 * 2**21 * fret2 * 2**18*fret3 * 2**15 * \
+        fret4*12 * stroke*2**11 * chord * 2**5 + face*2**2+neck
     return send_val
 
 
@@ -99,7 +101,6 @@ def main_connection(socket, maicon, start_time, bpm):
     finally:
         del maicon
         socket.send(b'\x01')
-        
 
 
 def main():
