@@ -3,7 +3,4 @@ __pycache__/
 tmp/
 tmp.*
 *.csv
-*.out
-*.mid
-*.txt
 *.save
