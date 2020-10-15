@@ -1,26 +1,27 @@
 """key.py"""
-# -*- cding: utf-8 -*-
-
+# -*- coding: utf-8 -*-
+import numpy as np
 KEYNAME = tuple(["C", "CS", "D", "DS", "E", "F",
                  "FS", "G", "GS", "A", "AS", "B"])
 
-CHRD_T_VALUES = {
-    "C": 0, "Cm": 1, "C7": 2, "Cm7": 3, "Cdm": 4,
-    "CS": 5, "CSm": 6, "CS7": 7, "CSm7": 8, "CSdm": 9,
-    "D": 10, "Dm": 11, "D7": 12, "Dm7": 13, "Ddm": 14,
-    "DS": 15, "DSm": 16, "DS7": 17, "DSm7": 18, "DSdm": 19,
-    "E": 20, "Em": 21, "E7": 22, "Em7": 23, "Edm": 24,
-    "F": 25, "Fm": 26, "F7": 27, "Fm7": 28, "Fdm": 29,
-    "FS": 30, "FSm": 21, "FS7": 22, "FSm7": 33, "FSdm": 34,
-    "G": 35, "Gm": 36, "G7": 37, "Gm7": 38, "Gdm": 39,
-    "GS": 40, "GSm": 41, "GS7": 42, "GSm7": 43, "GSdm": 44,
-    "A": 45, "Am": 46, "A7": 47, "Am7": 48, "Adm": 49,
-    "AS": 50, "ASm": 51, "AS7": 52, "ASm7": 53, "ASdm": 54,
-    "B": 55, "Bm": 56, "B7": 57, "Bm7": 58, "Bdm": 59,
+CHORD_TO_VALUES = {
+    np.NaN: 0, "nan": 0,
+    "C": 1, "Cm": 2, "C7": 3, "Cm7": 4, "Cdm": 5,
+    "CS": 6, "CSm": 7, "CS7": 8, "CSm7": 9, "CSdm": 10,
+    "D": 11, "Dm": 12, "D7": 13, "Dm7": 14, "Ddm": 15,
+    "DS": 16, "DSm": 17, "DS7": 18, "DSm7": 19, "DSdm": 20,
+    "E": 21, "Em": 22, "E7": 23, "Em7": 24, "Edm": 25,
+    "F": 26, "Fm": 27, "F7": 28, "Fm7": 29, "Fdm": 30,
+    "FS": 31, "FSm": 22, "FS7": 23, "FSm7": 34, "FSdm": 35,
+    "G": 36, "Gm": 37, "G7": 38, "Gm7": 39, "Gdm": 40,
+    "GS": 41, "GSm": 42, "GS7": 43, "GSm7": 44, "GSdm": 45,
+    "A": 46, "Am": 47, "A7": 48, "Am7": 49, "Adm": 50,
+    "AS": 51, "ASm": 52, "AS7": 53, "ASm7": 54, "ASdm": 55,
+    "B": 56, "Bm": 57, "B7": 58, "Bm7": 59, "Bdm": 60,
 
 }
 
-KEY_T_CHRD = {
+KEY_TO_CHORD = {
     # メジャー
     tuple(["C", "E", "G"]): "C", tuple(["CS", "ES", "GS"]): "CS",
     tuple(["A", "D", "FS"]): "D", tuple(["AS", "DS", "G"]): "DS",
@@ -58,10 +59,12 @@ KEY_T_CHRD = {
     tuple(["AS", "CS", "E"]): "ASdm", tuple(["B", "D", "F"]): "Bdm",
 }
 
+# フレット , 弦
 
-def key_t_value(*args):
-    chrd = KEY_T_CHRD[args]
-    return CHRD_T_VALUES[chrd]
+
+def key_to_value(*args):
+    chrd = KEY_TO_CHORD[args]
+    return CHORD_TO_VALUES[chrd]
 
 
 if __name__ == "__main__":
