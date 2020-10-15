@@ -3,6 +3,8 @@ from numpy.lib.ufunclike import fix
 import pandas as pd
 from library import key
 
+PATH = "365.csv"
+
 DEFAULT_HEADER = ["bar", "sbar", "note",
                   "chord", "castanets", "shaker", "tambourine"]
 HEADER = ["BPM", "TIMING", "STRING", "FRET1", "FRET2", "FRET3", "FRET4", "STROKE",
@@ -10,6 +12,7 @@ HEADER = ["BPM", "TIMING", "STRING", "FRET1", "FRET2", "FRET3", "FRET4", "STROKE
 
 SINGLE_SOUND = {
     "nan": [[0, 0]],
+    "CS": [[1, 3]],
     "D": [[2, 3]],
     "DS": [[3, 3]],
     "E": [[4, 3]],
@@ -75,7 +78,7 @@ def fix_df(df, length: int):
 def main():
 
     BPM = int(input("BPMを入力してください"))
-    df = pd.read_csv("../data/original/365.csv")
+    df = pd.read_csv(f"../data/original/{PATH}")
     print(np.unique(df["NOTE"].dropna()))
     fixed_df = pd.DataFrame(
         [[np.NaN for _ in range(len(HEADER))] for _ in range(get_songs_length(df))], columns=HEADER)
@@ -108,14 +111,18 @@ def main():
         1 if (i//2) % 2 == 0 else 0 for i in range(len(fixed_df["TIMING"]))]
     for head in ["MOTION", "COLOR", "FACE", "NECK"]:
         fixed_df[head] = fixed_df[head].fillna(0)
-    for head in ["CASTANETS", "SHAKER", "TAMBOURINE"]:
-        fixed_df[head] = df[head].fillna(0)
+    instrument = [[0 for _ in range(get_songs_length(df))]for _ in range(3)]
+    for i, head in enumerate(["CASTANETS", "SHAKER", "TAMBOURINE"]):
+        for bar, sbar, df_h in zip(df["BAR"], df["SBAR"], df[head]):
+            instrument[i][bar*16+sbar-17] = 1
+    for head, ins in zip(["CASTANETS", "SHAKER", "TAMBOURINE"], instrument):
+        fixed_df[head] = ins
     for header in HEADER:
         try:
             fixed_df[header] = fixed_df[header].astype(int)
         except:
-            pass
-    fixed_df.to_csv("../data/fixed/365.csv", index=False)
+            print(header)
+    fixed_df.to_csv(f"../data/fixed/{PATH}", index=False)
 
 
 if __name__ == "__main__":
