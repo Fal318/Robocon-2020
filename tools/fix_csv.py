@@ -1,49 +1,27 @@
-import sys
-import threading
 import numpy as np
 from numpy.lib.ufunclike import fix
 import pandas as pd
 from library import key
 
-sys.setrecursionlimit(10000000)
-
+DEFAULT_HEADER = ["bar", "sbar", "note",
+                  "chord", "castanets", "shaker", "tambourine"]
 HEADER = ["BPM", "TIMING", "STRING", "FRET1", "FRET2", "FRET3", "FRET4", "STROKE",
           "CHORD", "FACE", "NECK", "CASTANETS", "SHAKER", "TAMBOURINE", "MOTION", "COLOR"]
-"""
-SINGLE_SOUND = {
-    "CS": [[1, 3]],
-    "D": [[2, 3]],
-    "DS": [[3, 3]],
-    "E": [[3, 4]],
-    "F": [[5, 3], [1, 2]],
-    "FS": [[6, 3], [2, 2]],
-    "G": [[7, 3], [3, 2]],
-    "GS": [[1, 4], [8, 3], [4, 2]],
-    "A": [[2, 4], [5, 2]],
-    "AS": [[3, 4], [6, 2], [1, 1]],
-    "B": [[4, 4], [7, 2], [2, 1]],
-    "C2": [[5, 4], [8, 2], [3, 1]],
-    "C2S": [[6, 4], [4, 1]],
-    "D2": [[7, 4], [5, 1]],
-    "D2S": [[8, 4], [6, 1]],
-    "E2": [[7, 1]],
-    "F2": [[8, 1]],
-}
-"""
+
 SINGLE_SOUND = {
     "nan": [[0, 0]],
     "D": [[2, 3]],
     "DS": [[3, 3]],
-    "E": [[3, 4]],
-    "F": [[5, 3], [1, 2]],
-    "FS": [[6, 3], [2, 2]],
-    "G": [[7, 3], [3, 2]],
-    "GS": [[1, 4], [8, 3], [4, 2]],
+    "E": [[4, 3]],
+    "F": [[1, 2], [5, 3]],
+    "FS": [[2, 2], [6, 3]],
+    "G": [[3, 2], [7, 3]],
+    "GS": [[1, 4],  [4, 2], [8, 3]],
     "A": [[2, 4], [5, 2]],
     "AS": [[3, 4], [6, 2], [1, 1]],
     "B": [[4, 4], [7, 2], [2, 1]],
-    "C": [[5, 4], [8, 2], [3, 1]],
-    "CS": [[6, 4], [4, 1]],
+    "C2": [[5, 4], [8, 2], [3, 1]],
+    "CS2": [[6, 4], [4, 1]],
     "D2": [[7, 4], [5, 1]],
     "D2S": [[8, 4], [6, 1]],
     "E2": [[7, 1]],
@@ -95,18 +73,26 @@ def fix_df(df, length: int):
 
 
 def main():
+
     BPM = int(input("BPMを入力してください"))
     df = pd.read_csv("../data/original/365.csv")
     fixed_df = pd.DataFrame(
         [[np.NaN for _ in range(len(HEADER))] for _ in range(get_songs_length(df))], columns=HEADER)
     fixed_df["CHORD"] = generate_fixed_chord(df, fixed_df["CHORD"])
     fixed_df["BPM"] = fixed_df["BPM"].fillna(BPM)
-    fixed_df["note"] = search(fix_df(df, get_songs_length(df)))
+    fret = [fixed_df["FRET1"].fillna(0)for _ in range(4)]
+    searched = search(fix_df(df, get_songs_length(df)))
+    for index, row in enumerate(searched):
+        if row is not [0, 0]:
+            fret[row[1]-1][index] = row[0]
+    for i in range(4):
+        fixed_df[f"FRET{i+1}"] = fret[i]
+    fixed_df["STRING"] = [s[1] for s in searched]
     """
     for header in HEADER:
         fixed_df[header] = fixed_df[header].astype(int)
     """
-    fixed_df.to_csv("../data/fixed/365.csv")
+    fixed_df.to_csv("../data/fixed/365.csv", index=False)
 
 
 if __name__ == "__main__":

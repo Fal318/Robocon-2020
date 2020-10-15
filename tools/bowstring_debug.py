@@ -1,12 +1,16 @@
+import time
+
+from pandas._libs import interval
 import pandas as pd
 import numpy as np
 import cv2
 
-DELAY = 100
+BPM = 105
+DELAY =  60/(BPM*4)
 
 
 def hstacks(img: list):
-    return np.hstack((np.hstack((img[0], img[1])), np.hstack((img[2], img[3]))))
+    return np.hstack((np.hstack((img[3], img[2])), np.hstack((img[1], img[0]))))
 
 
 def vstacks(img: list):
@@ -17,23 +21,36 @@ def vstacks(img: list):
     return np.vstack((image[0], image[1]))
 
 
-def main():
+def main() -> list:
+    use_timing = [[] for _ in range(4)]
+    count = 0
     df = pd.read_csv("../data/fixed/365.csv")
-    for fret in zip(df["FRET1"], df["FRET2"], df["FRET3"], df["FRET4"]):
+    for string, fret in zip(df["STRING"], zip(df["FRET1"], df["FRET2"], df["FRET3"], df["FRET4"])):
+        start_time = time.time()
         # for _ in range(100):
         height, width = 100, 200
         images = [[np.zeros((height, width, 3), np.uint8)
                    for _ in range(4)] for _ in range(8)]
-        for i, f in enumerate(fret):
-            if f == 1:
-                for img in images:
-                    img[i] = np.tile(
-                        np.uint8([84, 255, 159]), (height, width, 1))
+
+        for i, _ in enumerate(fret):
+            if string != 0 and string == i+1:
+                images[i][string-1] = np.tile(
+                    np.uint8([84, 255, 159]), (height, width, 1))
+                use_timing[string-1].append(count)
         image = vstacks([hstacks(images[i])for i in range(8)])
         cv2.imshow("bow", image)
-        if cv2.waitKey(DELAY) & 0xFF == (ord("q") and ord("e")):
-            return
+        if cv2.waitKey(int((time.time()+DELAY-start_time)*1000)) & 0xFF == (ord("q") and ord("e")):
+            cv2.destroyAllWindows()
+            break
+        count += 1
+    return use_timing
 
 
 if __name__ == "__main__":
-    main()
+
+    use_timing = main()
+    interval = []
+    for timing in use_timing:
+        for i in range(1, len(timing)):
+            interval.append(timing[i] - timing[i-1])
+    print(sorted(interval))
