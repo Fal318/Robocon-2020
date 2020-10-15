@@ -54,11 +54,11 @@ class BowStatus:
 
 
 def get_songs_length(df: pd.DataFrame) -> int:
-    return (max(df["bar"])+1)*16
+    return (max(df["BAR"])+1)*16
 
 
 def generate_fixed_chord(df: pd.DataFrame, fixed_list: list) -> list:
-    for bar, sbar, chord in zip(df["bar"], df["sbar"], df["chord"]):
+    for bar, sbar, chord in zip(df["BAR"], df["SBAR"], df["CHORD"]):
         index = bar*16+sbar
         fixed_list[index] = key.CHORD_TO_VALUES[chord]
     return fixed_list
@@ -67,8 +67,8 @@ def generate_fixed_chord(df: pd.DataFrame, fixed_list: list) -> list:
 def fix_df(df, length: int):
     arr = ["nan" for _ in range(length)]
     for _, row in df.iterrows():
-        if not isinstance(row["note"], float):
-            arr[row["bar"]*16+row["sbar"]-17] = row["note"]
+        if not isinstance(row["NOTE"], float):
+            arr[row["BAR"]*16+row["SBAR"]-17] = row["NOTE"]
     return arr
 
 
@@ -76,22 +76,45 @@ def main():
 
     BPM = int(input("BPMを入力してください"))
     df = pd.read_csv("../data/original/365.csv")
+    print(np.unique(df["NOTE"].dropna()))
     fixed_df = pd.DataFrame(
         [[np.NaN for _ in range(len(HEADER))] for _ in range(get_songs_length(df))], columns=HEADER)
     fixed_df["CHORD"] = generate_fixed_chord(df, fixed_df["CHORD"])
     fixed_df["BPM"] = fixed_df["BPM"].fillna(BPM)
     fret = [fixed_df["FRET1"].fillna(0)for _ in range(4)]
-    searched = search(fix_df(df, get_songs_length(df)))
+    searched = search(fix_df(df, get_songs_length(df))[::-1])[::-1]
+    fixed_df["STROKE"] = [1 if s[1] else 0 for s in searched]
     for index, row in enumerate(searched):
         if row is not [0, 0]:
             fret[row[1]-1][index] = row[0]
-    for i in range(4):
-        fixed_df[f"FRET{i+1}"] = fret[i]
-    fixed_df["STRING"] = [s[1] for s in searched]
-    """
+    for i, f in enumerate(fret):
+        lastdata = 0
+        fix_fret = []
+        for row in f[::-1]:
+            if row == 0:
+                fix_fret.append(lastdata)
+            else:
+                lastdata = row
+                fix_fret.append(row)
+        fixed_df[f"FRET{i+1}"] = fix_fret[::-1]
+
+    fixed_df["STRING"] = [np.nan if s[1] == 0 else s[1]for s in searched]
+    fixed_df["STRING"] = fixed_df["STRING"].fillna(method='bfill').fillna(0)
+    fixed_chord = [np.nan for _ in range(get_songs_length(df))]
+    for bar, sbar, chord in zip(df["BAR"], df["SBAR"], df["CHORD"]):
+        fixed_chord[bar*16+sbar-17] = chord
+    fixed_df["CHORD"] = [key.CHORD_TO_VALUES[d] for d in fixed_chord]
+    fixed_df["TIMING"] = [
+        1 if (i//2) % 2 == 0 else 0 for i in range(len(fixed_df["TIMING"]))]
+    for head in ["MOTION", "COLOR", "FACE", "NECK"]:
+        fixed_df[head] = fixed_df[head].fillna(0)
+    for head in ["CASTANETS", "SHAKER", "TAMBOURINE"]:
+        fixed_df[head] = df[head].fillna(0)
     for header in HEADER:
-        fixed_df[header] = fixed_df[header].astype(int)
-    """
+        try:
+            fixed_df[header] = fixed_df[header].astype(int)
+        except:
+            pass
     fixed_df.to_csv("../data/fixed/365.csv", index=False)
 
 

@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 
 BPM = 105
-DELAY =  60/(BPM*4)
+DELAY = 30/(BPM*4)
 
 
 def hstacks(img: list):
@@ -27,22 +27,24 @@ def main() -> list:
     df = pd.read_csv("../data/fixed/365.csv")
     for string, fret in zip(df["STRING"], zip(df["FRET1"], df["FRET2"], df["FRET3"], df["FRET4"])):
         start_time = time.time()
-        # for _ in range(100):
-        height, width = 100, 200
+        height, width = 100, 150
         images = [[np.zeros((height, width, 3), np.uint8)
                    for _ in range(4)] for _ in range(8)]
 
-        for i, _ in enumerate(fret):
-            if string != 0 and string == i+1:
-                images[i][string-1] = np.tile(
+        for i, f in enumerate(fret):
+            if string == i+1 and f:
+                images[int(f)-1][string-1] = np.tile(
                     np.uint8([84, 255, 159]), (height, width, 1))
                 use_timing[string-1].append(count)
-        image = vstacks([hstacks(images[i])for i in range(8)])
+
+        image = vstacks([hstacks(images[i]) for i in range(8)])
         cv2.imshow("bow", image)
         if cv2.waitKey(int((time.time()+DELAY-start_time)*1000)) & 0xFF == (ord("q") and ord("e")):
-            cv2.destroyAllWindows()
             break
+
         count += 1
+
+    cv2.destroyAllWindows()
     return use_timing
 
 
@@ -53,4 +55,4 @@ if __name__ == "__main__":
     for timing in use_timing:
         for i in range(1, len(timing)):
             interval.append(timing[i] - timing[i-1])
-    print(sorted(interval))
+    print(min(interval))
