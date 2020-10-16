@@ -39,17 +39,14 @@ def generate_send_data(path: str, bpm) -> list:
     else:
         original_data["STROKE"] = [
             0 for _ in range(len(original_data["STROKE"]))]
-    tmp = [calculate_send_data(bpm, list(row))
-           for row in original_data.iterrows()]
-    print(max(tmp))
-    return tmp
+
+    return [calculate_send_data(bpm, *list(row[1:]))
+            for row in original_data.itertuples()]
 
 
-def calculate_send_data(bpm, row) -> int:
-    row = row[1]
-    timing, bownum = row[0], row[1]
-    fret1, fret2, fret3, fret4 = row[2], row[3], row[4], row[5]
-    stroke, chord, face, neck = row[6], row[7], row[8], row[9]
+def calculate_send_data(bpm, *args) -> int:
+
+    timing, bownum, fret1, fret2, fret3, fret4, stroke, chord, face, neck = args
     send_val = ((bpm-60)//5)*2**28 + timing * 2**27 + bownum * 2**24 + \
         fret1 * 2**21 + fret2 * 2**18+fret3 * 2**15 + \
         fret4*2**12 + stroke*2**11 + chord * 2**5 + face*2**2+neck
@@ -118,8 +115,8 @@ def main_connection(socket, maicon, start_time, bpm):
 
 
 def main():
-    #print(max(generate_send_data(f"../data/fixed/{PATH}", 105)))
-    # exit(0)
+    print(max(generate_send_data(f"../data/fixed/{PATH}", 105)))
+    exit(0)
     socket, maicon, start_time, bpm = setup()
 
     print(bpm)

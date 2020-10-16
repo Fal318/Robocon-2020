@@ -5,6 +5,7 @@ import time
 import threading
 import serial
 import bluetooth
+import numpy as np
 import pandas as pd
 import config
 from library import head, serial_connect
@@ -25,22 +26,22 @@ class Lag:
         return self.__start_time + self.__period*self.__loop_count - time.time()
 
 
-def calculate_send_data(args: list) -> list:
+def calculate_send_data(*args) -> int:
     """送信データを1Byteごとに分割"""
     castanets, shaker, tambourine, motion, color = args
-    #bowstring, bpm, timing, stroke, chord, face, neck = args
     send_val = castanets*2**30+shaker*2**29+tambourine*2**28\
-        + motion*2**26+color*2**23
+        + motion*2**26+color*2**23+0b111111111111111111111111
     return send_val
 
 
 def generate_send_data(path: str) -> list:
     """送信するデータの配列とBPMを返す"""
     original_df = pd.read_csv(path)
-    original_data = pd.DataFrame()
+    original_data = pd.DataFrame(index=None)
     for key in head.PERCUSSION:
         original_data[key] = original_df[key].fillna(0)
-    return [calculate_send_data(*list(d))
+
+    return [calculate_send_data(*list(d[1:]))
             for d in original_data.itertuples()]
 
 
@@ -107,8 +108,6 @@ def main_connection(socket, maicon, start_time, bpm):
 
 def main():
     socket, maicon, start_time, bpm = setup()
-
-    print(bpm)
 
     sub_thread = threading.Thread(
         target=main_connection, args=([socket, maicon, start_time, bpm]))
