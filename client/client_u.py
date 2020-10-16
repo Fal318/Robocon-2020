@@ -10,6 +10,11 @@ import config
 from library import head, serial_connect
 
 
+PATH = "365.csv"
+MODE = 0
+# メロディー:0, コード:1
+
+
 class Lag:
     def __init__(self, period):
         self.__start_time = None
@@ -23,22 +28,32 @@ class Lag:
         return self.__start_time + self.__period*self.__loop_count - time.time()
 
 
-def generate_send_data(path: str) -> list:
-    original_df = pd.read_csv(path, header=False)
-    original_data = pd.DataFrame()
+def generate_send_data(path: str, bpm) -> list:
+    df = pd.read_csv(path)
+    original_data = pd.DataFrame(index=None)
     for key in head.UKULELE:
-        original_data[key] = original_df[key].fillna(0)
-    return [[calculate_send_data(*list(d))
-             for d in original_data.itertuples()], original_data["bpm"]]
+        original_data[key] = df[key].fillna(0)
+    if MODE:
+        for key in ["FRET1", "FRET2", "FRET3", "FRET4"]:
+            original_data[key] = [0 for _ in range(len(original_data[key]))]
+    else:
+        original_data["STROKE"] = [
+            0 for _ in range(len(original_data["STROKE"]))]
+    tmp = [calculate_send_data(bpm, list(row))
+           for row in original_data.iterrows()]
+    print(max(tmp))
+    return tmp
 
 
-def calculate_send_data(bpm: int, timing: bool, bownum: int,
-                        fret1: int, fret2: int, fret3: int, fret4: int,
-                        stroke: bool, chord: int, face: int, neck: int) -> int:
-    send_val = bpm*2**28 + timing * 2**27 + bownum * 2**24 + \
-        fret1 * 2**21 * fret2 * 2**18*fret3 * 2**15 * \
-        fret4*12 * stroke*2**11 * chord * 2**5 + face*2**2+neck
-    return send_val
+def calculate_send_data(bpm, row) -> int:
+    row = row[1]
+    timing, bownum = row[0], row[1]
+    fret1, fret2, fret3, fret4 = row[2], row[3], row[4], row[5]
+    stroke, chord, face, neck = row[6], row[7], row[8], row[9]
+    send_val = ((bpm-60)//5)*2**28 + timing * 2**27 + bownum * 2**24 + \
+        fret1 * 2**21 + fret2 * 2**18+fret3 * 2**15 + \
+        fret4*2**12 + stroke*2**11 + chord * 2**5 + face*2**2+neck
+    return int(send_val)
 
 
 def setup() -> list:
@@ -74,9 +89,7 @@ def status_check(socket: bluetooth.BluetoothSocket) -> int:
 
 def main_connection(socket, maicon, start_time, bpm):
     """main"""
-    #generated_data = generate_send_data("../data/data.csv")
-    generated_data = [[i for i in range(1, 10000)], [
-        480 for _ in range(100)]]  # test data
+    generated_data = generate_send_data(f"../data/fixed/{PATH}", bpm)
     lag = Lag(60/bpm)
     try:
         if start_time-time.time() > 0.2:
@@ -87,10 +100,11 @@ def main_connection(socket, maicon, start_time, bpm):
         if not maicon.is_aivable:
             return
 
-        for sd, bpm in zip(*generated_data):
+        for sd in generated_data:
             send_time = time.time()
             time.sleep(config.UKULELE_DELAY)
             maicon.write(sd)
+            print(sd)
             time.sleep(lag.get_lag(send_time))
     except KeyboardInterrupt:
         print("Connection End")
@@ -104,6 +118,8 @@ def main_connection(socket, maicon, start_time, bpm):
 
 
 def main():
+    #print(max(generate_send_data(f"../data/fixed/{PATH}", 105)))
+    # exit(0)
     socket, maicon, start_time, bpm = setup()
 
     print(bpm)

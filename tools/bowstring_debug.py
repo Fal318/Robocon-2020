@@ -1,12 +1,13 @@
-import time
-
 from pandas._libs import interval
 import pandas as pd
 import numpy as np
 import cv2
 
 BPM = 105
-DELAY = 30/(BPM*4)
+DELAY = 60/(BPM*4)
+height, width = 100, 150
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+out = cv2.VideoWriter('output.mp4', fourcc, 1/DELAY, (600, 800))
 
 
 def hstacks(img: list):
@@ -26,24 +27,28 @@ def main() -> list:
     count = 0
     df = pd.read_csv("../data/fixed/365.csv")
     for string, fret in zip(df["STRING"], zip(df["FRET1"], df["FRET2"], df["FRET3"], df["FRET4"])):
-        start_time = time.time()
-        height, width = 100, 150
+
         images = [[np.zeros((height, width, 3), np.uint8)
                    for _ in range(4)] for _ in range(8)]
 
         for i, f in enumerate(fret):
             if string == i+1 and f:
-                images[int(f)-1][string-1] = np.tile(
-                    np.uint8([84, 255, 159]), (height, width, 1))
+                if string % 2:
+                    images[int(f) - 1][string-1] = np.tile(
+                        np.uint8([255, 0, 0]), (height, width, 1))
+                else:
+                    images[int(f) - 1][string-1] = np.tile(
+                        np.uint8([0, 0, 255]), (height, width, 1))
                 use_timing[string-1].append(count)
 
         image = vstacks([hstacks(images[i]) for i in range(8)])
+        out.write(image)
         cv2.imshow("bow", image)
-        if cv2.waitKey(int((time.time()+DELAY-start_time)*1000)) & 0xFF == (ord("q") and ord("e")):
+        if cv2.waitKey(int(DELAY*1000)) & 0xFF == ord("e"):
             break
 
         count += 1
-
+    out.release()
     cv2.destroyAllWindows()
     return use_timing
 

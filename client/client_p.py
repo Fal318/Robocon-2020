@@ -9,6 +9,8 @@ import pandas as pd
 import config
 from library import head, serial_connect
 
+PATH = "365.csv"
+
 
 class Lag:
     def __init__(self, period):
@@ -25,9 +27,10 @@ class Lag:
 
 def calculate_send_data(args: list) -> list:
     """送信データを1Byteごとに分割"""
-    bowstring, bpm, timing, stroke, chord, face, neck = args
-    send_val = bowstring*2**20 + bpm*2**13 + timing * 2**12 + \
-        stroke * 2**11 * chord * 2**5 + face*2**2+neck
+    castanets, shaker, tambourine, motion, color = args
+    #bowstring, bpm, timing, stroke, chord, face, neck = args
+    send_val = castanets*2**30+shaker*2**29+tambourine*2**28\
+        + motion*2**26+color*2**23
     return send_val
 
 
@@ -35,10 +38,10 @@ def generate_send_data(path: str) -> list:
     """送信するデータの配列とBPMを返す"""
     original_df = pd.read_csv(path)
     original_data = pd.DataFrame()
-    for key in head.UKULELE:
+    for key in head.PERCUSSION:
         original_data[key] = original_df[key].fillna(0)
-    return [[calculate_send_data(*list(d))
-             for d in original_data.itertuples()], original_data["bpm"]]
+    return [calculate_send_data(*list(d))
+            for d in original_data.itertuples()]
 
 
 def setup() -> list:
@@ -74,9 +77,7 @@ def status_check(socket: bluetooth.BluetoothSocket) -> int:
 
 def main_connection(socket, maicon, start_time, bpm):
     """main"""
-    # generated_data = generate_send_data("../data/data.csv")
-    generated_data = [[i for i in range(1, 10000)], [
-        480 for _ in range(100)]]  # test data
+    generated_data = generate_send_data(f"../data/fixed/{PATH}")
     lag = Lag(60/bpm)
     try:
 
@@ -89,7 +90,7 @@ def main_connection(socket, maicon, start_time, bpm):
 
         if not maicon.is_aivable:
             return
-        for sd, bpm in zip(*generated_data):
+        for sd in generated_data:
             send_time = time.time()
             time.sleep(config.PERCUSSION_DELAY)
             maicon.write(sd)
@@ -102,7 +103,6 @@ def main_connection(socket, maicon, start_time, bpm):
     finally:
         del maicon
         socket.send(b'\x01')
-        
 
 
 def main():

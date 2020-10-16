@@ -3,5 +3,6 @@ __pycache__/
 tmp/
 tmp.*
 *.csv
+*.mp4
 *.save
 !data/fixed/*.csv
