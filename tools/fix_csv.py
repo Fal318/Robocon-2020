@@ -1,3 +1,4 @@
+import itertools
 import numpy as np
 import pandas as pd
 from library import key
@@ -9,7 +10,7 @@ DEFAULT_HEADER = ["bar", "sbar", "note",
                   "chord", "castanets", "shaker", "tambourine"]
 HEADER = ["BPM", "TIMING", "STRING", "FRET1", "FRET2", "FRET3", "FRET4", "STROKE",
           "CHORD", "FACE", "NECK", "CASTANETS", "SHAKER", "TAMBOURINE", "MOTION", "COLOR"]
-
+WEIGHT = 4
 SINGLE_SOUND = {
     "nan": [[0, 0]],
     "CS": [[1, 3]],
@@ -34,19 +35,63 @@ SINGLE_SOUND = {
 
 def search(note: list) -> list:
     status = BowStatus()
-    return [status.decide_bowstrings(n, i) for i, n in enumerate(note)]
+    searched = []
+    for i, n in enumerate(note):
+        # print(note[i:i+16])
+        if len(note) > i+16:
+            searched.append(status.decide_bowstrings(n, i, note[i:i+16]))
+        else:
+            searched.append(status.decide_bowstrings(n, i, note[i:]))
+
+    return searched
+
+
+def search_bar(note, *args):
+    score_arr = [0 for _ in range(len(note))]
+    for _, master_bar in enumerate(note):
+        score = []
+        for bar in itertools.product(*args[0]):
+            score.append(0)
+            for j in range(1, 5):
+                if master_bar[1] == bar[j][1]:
+                    if master_bar[0] == bar[j][0]:
+                        score[-1] += WEIGHT/(j+1)
+            for j in range(1, 5):
+                for k in range(0, len(bar)-j):
+                    if bar[k][1] != 0 and bar[k][1] == bar[k+j][1]:
+                        if bar[k][0] != bar[k+j][0]:
+                            score[-1] += WEIGHT/(j+1)
+        score_arr.append(min(score))
+    return np.argmin(score_arr)
 
 
 class BowStatus:
     def __init__(self):
-        self.__bowstrings = [0 for i in range(4)]
+        self.__bowstrings = np.array([0 for i in range(4)])
 
-    def decide_bowstrings(self, note: str, loopcount: int) -> list:
+    def decide_bowstrings(self, note: str, loopcount: int, *args) -> list:
         """
         loopcount:16*小節+分小節
         """
         if note == "nan":
             return [0, 0]
+        can_use_bow = np.argmin(self.__bowstrings)  # 最後に使われてからの時間が長い弦
+        candidacy_bow = np.array(SINGLE_SOUND[note])  # その音を鳴らすことができる弦
+        not_used_bow = np.where(self.__bowstrings ==
+                                self.__bowstrings.max())[0]  # 最後に使われてからの時間が最大の弦
+
+        candidacy = np.array(
+            list(set(candidacy_bow[:, 1]) & set(not_used_bow)))
+        # 最後に使われ        print(master_bar)てからの時間が最大の弦と鳴らせる弦のand
+        candidacy = candidacy_bow
+        if len(candidacy) > 1:
+            tmp = [[] for _ in range(len(args))]
+            for i, bow in enumerate(args):
+                for b in bow:
+                    tmp[i].append(SINGLE_SOUND[b])
+            use_bow = search_bar(candidacy, *tmp)
+            return candidacy_bow[use_bow]
+
         can_use_bow = np.argsort(self.__bowstrings)  # 最後に使われてからの時間が長い弦
         candidacy_bow = SINGLE_SOUND[note]  # その音を鳴らすことができる弦
         for can_use in can_use_bow:
@@ -78,6 +123,8 @@ def fix_df(df, length: int):
 def main():
 
     df = pd.read_csv(f"../data/original/{PATH}")
+    for d in df["NOTE"].dropna():
+        print(d)
     print(np.unique(df["NOTE"].dropna()))
     fixed_df = pd.DataFrame(
         [[np.NaN for _ in range(len(HEADER))] for _ in range(get_songs_length(df))], columns=HEADER)
