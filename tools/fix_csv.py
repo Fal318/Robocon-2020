@@ -1,9 +1,9 @@
 import numpy as np
-from numpy.lib.ufunclike import fix
 import pandas as pd
 from library import key
 
-PATH = "365.csv"
+select = int(input("1:hand, 120\n2:365, 105\n"))
+PATH, BPM = [["hand.csv", 120], ["hand.csv", 105]][select-1]
 
 DEFAULT_HEADER = ["bar", "sbar", "note",
                   "chord", "castanets", "shaker", "tambourine"]
@@ -77,7 +77,6 @@ def fix_df(df, length: int):
 
 def main():
 
-    BPM = int(input("BPMを入力してください"))
     df = pd.read_csv(f"../data/original/{PATH}")
     print(np.unique(df["NOTE"].dropna()))
     fixed_df = pd.DataFrame(
@@ -113,8 +112,10 @@ def main():
         fixed_df[head] = fixed_df[head].fillna(0)
     instrument = [[0 for _ in range(get_songs_length(df))]for _ in range(3)]
     for i, head in enumerate(["CASTANETS", "SHAKER", "TAMBOURINE"]):
+        df[head] = df[head].fillna(0)
         for bar, sbar, df_h in zip(df["BAR"], df["SBAR"], df[head]):
-            instrument[i][bar*16+sbar-17] = 1
+            if df_h:
+                instrument[i][bar*16+sbar-17] = 1
     for head, ins in zip(["CASTANETS", "SHAKER", "TAMBOURINE"], instrument):
         fixed_df[head] = ins
     for header in HEADER:
