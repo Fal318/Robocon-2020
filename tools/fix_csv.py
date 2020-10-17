@@ -133,7 +133,18 @@ def main():
             fixed_df[header] = fixed_df[header].astype(int)
         except:
             print(header)
-    fixed_df.to_csv(f"../data/fixed/{PATH}", index=False)
+    generated_df = pd.DataFrame()
+    amplification = 60/(BPM*4)/0.01
+
+
+    for header in HEADER:
+        df_tmp = []
+        for df in fixed_df[header]:
+            for _ in range(int(amplification)):
+                df_tmp.append(df)
+        generated_df[header] = df_tmp
+
+    generated_df.to_csv(f"../data/fixed/{PATH}", index=False)
 
 
 if __name__ == "__main__":

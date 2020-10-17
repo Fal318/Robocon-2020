@@ -7,12 +7,12 @@ import address as ad
 from library import bt_connect
 from library import timestamp as ts
 
-HOST_NAME = ["ukulele", "percussion"]
+#HOST_NAME = ["ukulele", "percussion"]
+HOST_NAME = [ "percussion","ukulele"]
 IS_DEBUG: bool = True  # デバッグ用かどうか
 TARGET: int = 1  # TARGET:接続する台数
 BPM = 105
 timestamp = ts.Timestamp(TARGET)
-
 
 class Connection:
     """通信を定周期で行う"""
@@ -68,6 +68,8 @@ class Connection:
                     self.__read()
                 except OSError:
                     continue
+                except KeyboardInterrupt:
+                    Connection.Ended = True
                 else:
                     Connection.Ended = True
         except KeyboardInterrupt:

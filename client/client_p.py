@@ -16,21 +16,24 @@ PATH = "365.csv"
 class Lag:
     def __init__(self, period):
         self.__start_time = None
-        self.__period = period
+        #self.__period = period
+        self.__period = 0.03
         self.__loop_count = 0
 
     def get_lag(self,  send_time):
         self.__loop_count += 1
         if self.__start_time is None:
             self.__start_time = send_time
+        if self.__start_time + self.__period*self.__loop_count - time.time() < 0:
+            return 0
         return self.__start_time + self.__period*self.__loop_count - time.time()
 
 
 def calculate_send_data(*args) -> int:
     """送信データを1Byteごとに分割"""
     castanets, shaker, tambourine, motion, color = args
-    send_val = castanets*2**30+shaker*2**29+tambourine*2**28\
-        + motion*2**26+color*2**23+0b111111111111111111111111
+    send_val = castanets*2**31+shaker*2**30+tambourine*2**29\
+        + motion*2**27+color*2**24+0b111111111111111111111111
     return send_val
 
 
@@ -71,11 +74,17 @@ def status_check(socket: bluetooth.BluetoothSocket) -> int:
         try:
             recv = int.from_bytes(socket.recv(1), "big")
         except bluetooth.BluetoothError:
-            continue
+            print("BluetoothError")
+            socket.send(b'\x01')
+            return
         else:
             return recv
 
-
+def print_data(value):
+    d1 = int((value & 0b10000000000000000000000000000000) / 2**31)
+    d2 = int((value & 0b01000000000000000000000000000000) / 2**30)
+    d3 = int((value & 0b00100000000000000000000000000000) / 2**29)
+    print(f"c:{d1}, s:{d2}, t:{d3}")
 def main_connection(socket, maicon, start_time, bpm):
     """main"""
     generated_data = generate_send_data(f"../data/fixed/{PATH}")
@@ -95,9 +104,12 @@ def main_connection(socket, maicon, start_time, bpm):
             send_time = time.time()
             time.sleep(config.PERCUSSION_DELAY)
             maicon.write(sd)
+            print_data(sd)
             time.sleep(lag.get_lag(send_time))
 
     except serial.SerialException:
+        print("Process is Failed")
+    except KeyboardInterrupt:
         print("Process is Failed")
     else:
         print("Connection Ended")
@@ -116,9 +128,12 @@ def main():
     sub_thread.setDaemon(True)
     main_thread.start()
     sub_thread.start()
-    main_thread.join()
-    if sub_thread.is_alive():
-        print("Process is Killed from master")
+    try:
+        main_thread.join()
+        if sub_thread.is_alive():
+            print("Process is Killed from master")
+    except KeyboardInterrupt:
+        socket.send(b'\x01')
     sys.exit(0)
 
 

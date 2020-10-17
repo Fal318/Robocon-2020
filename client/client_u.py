@@ -18,7 +18,7 @@ MODE = 0
 class Lag:
     def __init__(self, period):
         self.__start_time = None
-        self.__period = period
+        self.__period = 0.01
         self.__loop_count = 0
 
     def get_lag(self, send_time):
@@ -115,11 +115,7 @@ def main_connection(socket, maicon, start_time, bpm):
 
 
 def main():
-    print(max(generate_send_data(f"../data/fixed/{PATH}", 105)))
-    exit(0)
     socket, maicon, start_time, bpm = setup()
-
-    print(bpm)
 
     sub_thread = threading.Thread(
         target=main_connection, args=([socket, maicon, start_time, bpm]))
