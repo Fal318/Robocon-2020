@@ -16,8 +16,7 @@ PATH = "365.csv"
 class Lag:
     def __init__(self, period):
         self.__start_time = None
-        #self.__period = period
-        self.__period = 0.03
+        self.__period = 0.01
         self.__loop_count = 0
 
     def get_lag(self,  send_time):
@@ -84,7 +83,8 @@ def print_data(value):
     d1 = int((value & 0b10000000000000000000000000000000) / 2**31)
     d2 = int((value & 0b01000000000000000000000000000000) / 2**30)
     d3 = int((value & 0b00100000000000000000000000000000) / 2**29)
-    print(f"c:{d1}, s:{d2}, t:{d3}")
+    return f"c:{d1}, s:{d2}, t:{d3}"
+
 def main_connection(socket, maicon, start_time, bpm):
     """main"""
     generated_data = generate_send_data(f"../data/fixed/{PATH}")
@@ -100,11 +100,12 @@ def main_connection(socket, maicon, start_time, bpm):
 
         if not maicon.is_aivable:
             return
+        play_start = time.time()
         for sd in generated_data:
             send_time = time.time()
             time.sleep(config.PERCUSSION_DELAY)
             maicon.write(sd)
-            print_data(sd)
+            print(f"{time.time() - play_start} {print_data(sd)}")
             time.sleep(lag.get_lag(send_time))
 
     except serial.SerialException:
