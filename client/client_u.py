@@ -7,7 +7,7 @@ import serial
 import bluetooth
 import pandas as pd
 import config
-from library import head, serial_connect
+from library import bt, head, serial_connect
 
 
 PATH = "hand.csv"
@@ -47,7 +47,7 @@ def generate_send_data(path: str, bpm) -> list:
 
 
 def calculate_send_data(bpm, *args) -> int:
-    
+
     timing, bownum, fret1, fret2, fret3, fret4, stroke, chord, face, neck = args
     send_val = 9*2**28 + timing * 2**27 + bownum * 2**24 + \
         fret1 * 2**21 + fret2 * 2**18+fret3 * 2**15 + \
@@ -57,16 +57,13 @@ def calculate_send_data(bpm, *args) -> int:
 
 def setup() -> list:
     try:
+        bt_sock = bt.BluetoothChild(1)
+        bt_sock.connect()
+        bpm = bt_sock.receive(8)
         maicon = serial_connect.Connection(
-            dev="/dev/serial0", rate=115200, data_size=config.BYTE_SIZE)
-        server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        server_socket.bind(("", 1))
-        server_socket.listen(1)
-        client_socket = server_socket.accept()[0]
-        bpm = int.from_bytes(client_socket.recv(8), "big")
-
-        client_socket.send(b'\x01')
-        start_time = int.from_bytes(client_socket.recv(64), "big")/10000000
+            dev="/dev/ttyUSB0", rate=115200, data_size=config.BYTE_SIZE)
+        bt_sock.send(1, 1)
+        start_time = bt_sock.receive(64)/10000000
         if start_time <= 0:
             raise Exception("Failed")
     except serial.SerialException:
@@ -74,11 +71,12 @@ def setup() -> list:
     except bluetooth.BluetoothError:
         sys.exit("Setup Failed")
     else:
-        return [client_socket, maicon, start_time, bpm]
+        return [bt_sock, maicon, start_time, bpm]
 
 
 def format_data(value):
-    timing, bownum = int((value & 2**27) / 2**27), int((value & 0b1111000000000000000000000000) / 2**24)
+    timing, bownum = int(
+        (value & 2**27) / 2**27), int((value & 0b111100000000000000000000000) / 2**24)
     f1, f2 = int((value & 2**21) / 2**21), int((value & 2**18) / 2**18)
     f3, f4 = int((value & 2**15) / 2**15), int((value & 2**12) / 2**12)
     stroke, chord = int((value & 2**11) / 2**11), int((value & 2**5) / 2**5)
@@ -90,13 +88,13 @@ def format_data(value):
 def status_check(socket: bluetooth.BluetoothSocket) -> int:
     while True:
         try:
-            recv = int.from_bytes(socket.recv(1), "big")
+            receive = socket.receive(1)
         except bluetooth.BluetoothError:
             print("BluetoothError")
-            socket.send(b'\x01')
+            socket.send(1, 1)
             return
         else:
-            return recv
+            return receive
 
 
 def main_connection(socket, maicon, start_time, bpm):
@@ -126,7 +124,7 @@ def main_connection(socket, maicon, start_time, bpm):
         print("Connection Ended")
     finally:
         del maicon
-        socket.send(b'\x01')
+        socket.send(1, 1)
 
 
 def main():
@@ -144,7 +142,7 @@ def main():
         if sub_thread.is_alive():
             print("Process is Killed from master")
     except KeyboardInterrupt:
-        socket.send(b'\x01')
+        socket.send(1, 1)
 
 
 if __name__ == "__main__":

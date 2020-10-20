@@ -5,10 +5,9 @@ import time
 import threading
 import serial
 import bluetooth
-import numpy as np
 import pandas as pd
 import config
-from library import head, serial_connect
+from library import bt, head, serial_connect
 
 PATH = "hand.csv"
 
@@ -50,39 +49,40 @@ def generate_send_data(path: str) -> list:
 def setup() -> list:
     """セットアップ"""
     try:
-        server_socket = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        server_socket.bind(("", 1))
-        server_socket.listen(1)
-        client_socket = server_socket.accept()[0]
-        bpm = int.from_bytes(client_socket.recv(8), "big")
+        bt_sock = bt.BluetoothChild(1)
+        bt_sock.connect()
+        bpm = bt_sock.receive(8)
         maicon = serial_connect.Connection(
             dev="/dev/ttyACM0", rate=115200, data_size=config.BYTE_SIZE)
-        client_socket.send(b'\x01')
-        start_time = int.from_bytes(client_socket.recv(64), "big")/10000000
+        bt_sock.send(1, 1)
+        start_time = bt_sock.receive(64)/10000000
     except serial.SerialException:
         sys.exit("Setup Failed")
     except bluetooth.BluetoothError:
         sys.exit("Setup Failed")
     else:
-        return [client_socket, maicon, start_time, bpm]
+        return [bt_sock, maicon, start_time, bpm]
 
 
 def status_check(socket: bluetooth.BluetoothSocket) -> int:
     """ステータスのチェック"""
     while True:
         try:
-            recv = int.from_bytes(socket.recv(1), "big")
+            receive = socket.receive(1)
         except bluetooth.BluetoothError:
             print("BluetoothError")
-            socket.send(b'\x01')
+            socket.send(1, 1)
             return
         else:
-            return recv
+            return receive
+
 
 def format_data(value):
-    d1,d2,d3 = int((value & 2**31) / 2**31),int((value & 2**30) / 2**30),int((value & 2**29) / 2**29)
-    m, c = int((value & 2**27) / 2**27),int((value & 2**24) / 2**24)
+    d1, d2, d3 = int((value & 2**31) / 2**31), int((value & 2 **
+                                                    30) / 2**30), int((value & 2**29) / 2**29)
+    m, c = int((value & 2**27) / 2**27), int((value & 2**24) / 2**24)
     return f"c:{d1}, s:{d2}, t:{d3}, m:{m}, c:{c}"
+
 
 def main_connection(socket, maicon, start_time, bpm):
     """main"""
@@ -115,7 +115,7 @@ def main_connection(socket, maicon, start_time, bpm):
         print("Connection Ended")
     finally:
         del maicon
-        socket.send(b'\x01')
+        socket.send(1, 1)
 
 
 def main():
@@ -133,7 +133,7 @@ def main():
         if sub_thread.is_alive():
             print("Process is Killed from master")
     except KeyboardInterrupt:
-        socket.send(b'\x01')
+        socket.send(1, 1)
     sys.exit(0)
 
 
