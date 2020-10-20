@@ -10,7 +10,7 @@ import pandas as pd
 import config
 from library import head, serial_connect
 
-PATH = "365.csv"
+PATH = "hand.csv"
 
 
 class Lag:
@@ -79,11 +79,10 @@ def status_check(socket: bluetooth.BluetoothSocket) -> int:
         else:
             return recv
 
-def print_data(value):
-    d1 = int((value & 0b10000000000000000000000000000000) / 2**31)
-    d2 = int((value & 0b01000000000000000000000000000000) / 2**30)
-    d3 = int((value & 0b00100000000000000000000000000000) / 2**29)
-    return f"c:{d1}, s:{d2}, t:{d3}"
+def format_data(value):
+    d1,d2,d3 = int((value & 2**31) / 2**31),int((value & 2**30) / 2**30),int((value & 2**29) / 2**29)
+    m, c = int((value & 2**27) / 2**27),int((value & 2**24) / 2**24)
+    return f"c:{d1}, s:{d2}, t:{d3}, m:{m}, c:{c}"
 
 def main_connection(socket, maicon, start_time, bpm):
     """main"""
@@ -105,7 +104,7 @@ def main_connection(socket, maicon, start_time, bpm):
             send_time = time.time()
             time.sleep(config.PERCUSSION_DELAY)
             maicon.write(sd)
-            print(f"{time.time() - play_start} {print_data(sd)}")
+            print(f"{'{:.5f}'.format(time.time() - play_start)} {format_data(sd)}")
             time.sleep(lag.get_lag(send_time))
 
     except serial.SerialException:

@@ -10,17 +10,16 @@ from library import timestamp as ts
 #HOST_NAME = ["ukulele", "percussion"]
 HOST_NAME = [ "percussion","ukulele"]
 IS_DEBUG: bool = True  # デバッグ用かどうか
-TARGET: int = 1  # TARGET:接続する台数
+TARGET: int = 2  # TARGET:接続する台数
 BPM = 105
 timestamp = ts.Timestamp(TARGET)
 
 class Connection:
     """通信を定周期で行う"""
-    Ended = False
 
     def __init__(self, proc_id: int):
         self.__proc_id: int = proc_id  # プロセスを識別するID
-
+        self.ended = False
         try:
             # 通信用のインスタンスを生成
             self.__ras = bt_connect.Connect("ras{0}".format(
@@ -63,15 +62,15 @@ class Connection:
                 continue
             self.__send(timestamp.get_timestamp(), 64)
             self.__ras.set_timeout(0.1)
-            while not Connection.Ended:
+            while not self.ended:
                 try:
                     self.__read()
                 except OSError:
                     continue
                 except KeyboardInterrupt:
-                    Connection.Ended = True
+                    self.ended = True
                 else:
-                    Connection.Ended = True
+                    self.ended = True
         except KeyboardInterrupt:
             print("Connection End")
         except bluetooth.BluetoothError:

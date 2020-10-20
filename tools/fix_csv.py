@@ -118,7 +118,10 @@ def main():
     fixed_df["CHORD"] = [key.CHORD_TO_VALUES[d] for d in fixed_chord]
     fixed_df["TIMING"] = [
         1 if (i//2) % 2 == 0 else 0 for i in range(len(fixed_df["TIMING"]))]
-    for head in ["MOTION", "COLOR", "FACE", "NECK"]:
+
+    fixed_df["MOTION"] = fixed_df["MOTION"].fillna(1)
+    fixed_df["COLOR"] = fixed_df["COLOR"].fillna(4)
+    for head in ["MOTION", "FACE", "NECK"]:
         fixed_df[head] = fixed_df[head].fillna(0)
     instrument = [[0 for _ in range(get_songs_length(df))]for _ in range(3)]
     for i, head in enumerate(["CASTANETS", "SHAKER", "TAMBOURINE"]):

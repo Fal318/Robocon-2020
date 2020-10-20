@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import cv2
 
-BPM = 55
+BPM = 1200
 DELAY = 60/(BPM*4)
 height, width = 120, 200
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
